@@ -1,0 +1,104 @@
+plugins {
+    id "com.android.application"
+    id "com.chaquo.python"
+    id "org.jetbrains.kotlin.android"
+    id 'kotlin-kapt'
+    id 'kotlin-android'
+    id 'com.google.devtools.ksp' version '1.9.10-1.0.13'
+
+
+}
+
+android {
+    namespace "com.example.aida"
+    compileSdk 34
+
+    sourceSets {
+        main {
+            python.srcDir "src/main/python"
+            assets.srcDirs "src/main/assets"
+        }
+    }
+
+    defaultConfig {
+        applicationId "com.example.aida"
+        minSdk 28
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+
+            abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+        }
+
+        python {
+            version "3.9"
+
+            pip {
+                install "numpy"
+                install "spacy==2.2.3"
+
+            }
+        }
+
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+
+    buildFeatures{
+
+        viewBinding true
+
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    aaptOptions {
+        noCompress "tflite"
+    }
+}
+
+
+
+dependencies {
+
+    implementation('androidx.core:core-ktx:1.12.0')
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation('com.google.android.material:material:1.10.0')
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    implementation('androidx.core:core-splashscreen:1.0.1')
+    implementation('org.tensorflow:tensorflow-lite:2.14.0')
+
+
+    def room_version = "2.6.0"
+
+    implementation "androidx.room:room-runtime:$room_version"
+    //implementation " androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0$lifecycle_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+
+    // To use Kotlin annotation processing tool (kapt)
+    // To use Kotlin Symbol Processing (KSP)
+    implementation "androidx.room:room-ktx:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+
+
+}

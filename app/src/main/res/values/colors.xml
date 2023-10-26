@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="colorPrimary">#C983EA</color>
+    <color name="colorPrimaryDark">#FFFFFFFF</color>
+    <color name="colorAccent">#FFFFFFFF</color>
+    <color name="color_splash">#D669F4</color>
+
+    <color name="chat_color_sender">#DAA51F</color>
+    <color name="chat_color_receiver">#7CB342</color>
+    <color name="graybot">#9A919F</color>
+
+</resources>
