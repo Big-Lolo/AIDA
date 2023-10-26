@@ -41,7 +41,7 @@ android {
                 install "numpy"
                 install "spacy==2.2.3"
 
-            }
+            } 
         }
 
 
