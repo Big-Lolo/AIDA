@@ -35,13 +35,11 @@ android {
         }
 
         python {
-            version "3.9"
+            version "3.8"
 
             pip {
                 install "numpy"
-                install "spacy==2.2.3"
-
-            } 
+            }
         }
 
 
@@ -87,6 +85,10 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation('androidx.core:core-splashscreen:1.0.1')
     implementation('org.tensorflow:tensorflow-lite:2.14.0')
+    implementation('org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0')
+    implementation 'edu.stanford.nlp:stanford-corenlp:4.4.0'
+
+
 
 
     def room_version = "2.6.0"

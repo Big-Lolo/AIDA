@@ -128,13 +128,6 @@ class chat : Fragment() {
                     messageDao.insert(Message(0, text.text.toString(), true, Date().time.toLong(), false))
                     val msg = messageDao.getAll()
                     messagechat = msg
-
-                    val py = Python.getInstance()
-                    val module = py.getModule("script")
-                    val funs = module["package_of_words"]
-                    val resposta = funs?.call("Es una frase de pruebas")
-                    println(resposta)
-
                 }
                 withContext(Dispatchers.Main) {
                     adapter.updateData(messagechat)

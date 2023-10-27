@@ -1,9 +1,11 @@
 import numpy as np
 import json
 import pickle
-import spacy
+
 from os.path import dirname, join
-nlp = spacy.load('es_core_news_sm')
+
+
+
 
 
 
