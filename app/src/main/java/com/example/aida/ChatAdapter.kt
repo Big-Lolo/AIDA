@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.aida.DataBase.Message
 
@@ -65,6 +66,7 @@ class ChatAdapter(private var dataSet: List<Message>) :
             layoutParamsText.removeRule(RelativeLayout.START_OF)
             layoutParamsText.addRule(RelativeLayout.END_OF, R.id.userImageView)
             viewHolder.textView.layoutParams = layoutParamsText
+            viewHolder.textView.setTextColor(ContextCompat.getColor(viewHolder.textView.context, android.R.color.white))
 
             //image pos
             layoutParams.removeRule(RelativeLayout.ALIGN_PARENT_END)

@@ -29,7 +29,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        //testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
 
@@ -77,11 +77,11 @@ android {
 
 
 dependencies {
-    testImplementation("junit:junit:4.10") {
-        exclude group: "org.hamcrest"
+
+    configurations {
+        all*.exclude group: 'org.hamcrest', module: 'hamcrest-core'
     }
 
-    
     implementation('androidx.core:core-ktx:1.12.0')
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation('com.google.android.material:material:1.10.0')
@@ -96,7 +96,6 @@ dependencies {
     implementation 'edu.stanford.nlp:stanford-corenlp:4.5.4'
 
     //implementation 'edu.stanford.nlp:stanford-corenlp:4.4.0'
-
 
     def room_version = "2.6.0"
 

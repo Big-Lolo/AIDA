@@ -3,13 +3,12 @@ package com.example.aida.serialization
 import android.content.Context
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import opennlp.tools.lemmatizer.DictionaryLemmatizer
-import opennlp.tools.postag.POSModel
-import opennlp.tools.postag.POSTaggerME
-import opennlp.tools.tokenize.TokenizerME
-import opennlp.tools.tokenize.TokenizerModel
 import org.tensorflow.lite.Interpreter
-import java.io.FileInputStream
+import edu.stanford.nlp.ling.CoreAnnotations
+import edu.stanford.nlp.ling.CoreLabel
+import edu.stanford.nlp.pipeline.StanfordCoreNLP
+import edu.stanford.nlp.simple.Document
+import java.util.*
 
 
 class WordsAndClasses(private val modelInterpreter: Interpreter, private val context: Context) {
@@ -52,20 +51,19 @@ class WordsAndClasses(private val modelInterpreter: Interpreter, private val con
     //}
 
     fun cleanUpSentence(sentence: String): List<String> {
-        // Tokenizar y lematizar la oración usando modelos de OpenNLP
-        val tokenizerModel = TokenizerModel(FileInputStream("en-token.bin"))
-        val tokenizer = TokenizerME(tokenizerModel)
-        val tokens = tokenizer.tokenize(sentence)
-
-        val posModel = POSModel(FileInputStream("en-pos-maxent.bin"))
-        val posTagger = POSTaggerME(posModel)
-        val tags = posTagger.tag(tokens)
-
-        val lemmatizerDict = DictionaryLemmatizer(FileInputStream("en-lemmatizer.dict"))
-        val lemmas = lemmatizerDict.lemmatize(tokens, tags)
-
-        return lemmas.toList()
+        val doc = Document(sentence)
+        val words = ArrayList<String>()
+        for (sentence in doc.sentences()) {
+            for (token in sentence.tokens()) {
+                val word = token.word().replace(Regex("[^a-zA-Z0-9]"), "").lowercase(Locale.getDefault())
+                if (word.isNotBlank()) {
+                    words.add(word)
+                }
+            }
+        }
+        return words
     }
+
 
     fun bagOfWords(sentence: String): IntArray {
         val sentenceWords = cleanUpSentence(sentence)
