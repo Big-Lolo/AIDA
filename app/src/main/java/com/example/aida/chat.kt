@@ -16,9 +16,12 @@ import com.chaquo.python.android.AndroidPlatform
 import com.example.aida.DataBase.Database
 import com.example.aida.DataBase.Message
 import com.example.aida.DataBase.MessageDao
+import com.example.aida.serialization.WordsAndClasses
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.tensorflow.lite.Interpreter
+import org.tensorflow.lite.support.common.FileUtil
 import java.util.Calendar
 import java.util.Date
 
@@ -43,6 +46,10 @@ class chat : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var db:Database
     private lateinit var messageDao: MessageDao
+    private lateinit var modelInterpreter: Interpreter
+    private lateinit var predicer: WordsAndClasses
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +61,8 @@ class chat : Fragment() {
         }
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
+                modelInterpreter = Interpreter(FileUtil.loadMappedFile(requireContext(), "chatbot_model_lite.tflite"))
+                predicer = WordsAndClasses(modelInterpreter, requireContext())
                 db = Room.databaseBuilder(requireContext(), Database::class.java, "message_list")
                     .build()
                 messageDao = db.messageDao()
@@ -126,6 +135,8 @@ class chat : Fragment() {
             lifecycleScope.launch {
                 withContext(Dispatchers.IO){
                     messageDao.insert(Message(0, text.text.toString(), true, Date().time.toLong(), false))
+                    val result = predicer.responseClass(text.text.toString())
+                    print(result)
                     val msg = messageDao.getAll()
                     messagechat = msg
                 }
