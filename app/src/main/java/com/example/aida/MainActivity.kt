@@ -1,17 +1,12 @@
 package com.example.aida
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
-import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
-import com.chaquo.python.Python
-import com.chaquo.python.android.AndroidPlatform
 import com.example.aida.databinding.ActivityMainBinding
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 
 class MainActivity : AppCompatActivity() {
@@ -19,7 +14,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val serviceIntent = Intent(this, VoiceRecognitionService::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //startForegroundService(serviceIntent)
 
+        } else {
+            startService(serviceIntent)
+        }
         super.onCreate(savedInstanceState)
         Thread.sleep(2000)
         installSplashScreen()

@@ -5,8 +5,11 @@ import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.speech.tts.TextToSpeech
+import android.speech.tts.TextToSpeech.OnInitListener
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +33,7 @@ import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.common.FileUtil
 import java.util.Calendar
 import java.util.Date
+
 typealias SpeechRecognitionCallback = (String) -> Unit
 
 
@@ -43,7 +47,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [chat.newInstance] factory method to
  * create an instance of this fragment.
  */
-class chat : Fragment() {
+class chat : Fragment(), OnInitListener  {
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -55,6 +59,7 @@ class chat : Fragment() {
     private lateinit var messageDao: MessageDao
     private lateinit var modelInterpreter: Interpreter
     private lateinit var predicer: WordsAndClasses
+    private lateinit var textToSpeech: TextToSpeech
 
 
 
@@ -93,6 +98,8 @@ class chat : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_chat, container, false)
+        textToSpeech = TextToSpeech(requireContext(), this)
+
         if (! Python.isStarted()) {
             Python.start(AndroidPlatform(requireContext()));
         }
@@ -192,6 +199,7 @@ class chat : Fragment() {
                             messageDao.insert(Message(0, respuesta, false, Date().time.toLong(), false))
                             val msg = messageDao.getAll()
                             messagechat = msg
+                            leerTextoEnVozAlta(respuesta)
                         }
                         withContext(Dispatchers.Main) {
                             adapter.updateData(messagechat)
@@ -237,8 +245,9 @@ class chat : Fragment() {
 
                     }
                 }
-                text?.setText("")
+
             }
+        text?.setText("")
         }
 
 
@@ -284,6 +293,32 @@ class chat : Fragment() {
 
         speechRecognizer.startListening(speechRecognizerIntent)
     }
+
+
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            // Configuración exitosa, puedes establecer el idioma aquí si es necesario
+        } else {
+            Log.e("TTS", "Error en la inicialización")
+        }
+    }
+
+    // Asegúrate de liberar los recursos de TextToSpeech en onDestroyView o en otro lugar adecuado.
+    override fun onDestroyView() {
+        if (textToSpeech != null) {
+            textToSpeech.stop()
+            textToSpeech.shutdown()
+        }
+        super.onDestroyView()
+    }
+
+    // Agrega un método para leer texto en respuesta a un evento (por ejemplo, hacer clic en un botón).
+    private fun leerTextoEnVozAlta(texto: String) {
+        textToSpeech.speak(texto, TextToSpeech.QUEUE_FLUSH, null, null)
+    }
+
+
 
 }
 
