@@ -3,8 +3,13 @@ package com.example.aida.serialization
 import android.content.Context
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import opennlp.tools.lemmatizer.DictionaryLemmatizer
+import opennlp.tools.postag.POSModel
+import opennlp.tools.postag.POSTaggerME
+import opennlp.tools.tokenize.TokenizerME
+import opennlp.tools.tokenize.TokenizerModel
 import org.tensorflow.lite.Interpreter
-
+import java.io.FileInputStream
 
 
 class WordsAndClasses(private val modelInterpreter: Interpreter, private val context: Context) {
@@ -39,11 +44,27 @@ class WordsAndClasses(private val modelInterpreter: Interpreter, private val con
 
 
 
+    //fun cleanUpSentence(sentence: String): List<String> {
+      //  val words = sentence.split(Regex("\\s+"))
+        //    .map { it.replace(Regex("[^a-zA-Z0-9]"), "").lowercase() }
+          //  .filter { it.isNotBlank() }
+        //return words
+    //}
+
     fun cleanUpSentence(sentence: String): List<String> {
-        val words = sentence.split(Regex("\\s+"))
-            .map { it.replace(Regex("[^a-zA-Z0-9]"), "").lowercase() }
-            .filter { it.isNotBlank() }
-        return words
+        // Tokenizar y lematizar la oración usando modelos de OpenNLP
+        val tokenizerModel = TokenizerModel(FileInputStream("en-token.bin"))
+        val tokenizer = TokenizerME(tokenizerModel)
+        val tokens = tokenizer.tokenize(sentence)
+
+        val posModel = POSModel(FileInputStream("en-pos-maxent.bin"))
+        val posTagger = POSTaggerME(posModel)
+        val tags = posTagger.tag(tokens)
+
+        val lemmatizerDict = DictionaryLemmatizer(FileInputStream("en-lemmatizer.dict"))
+        val lemmas = lemmatizerDict.lemmatize(tokens, tags)
+
+        return lemmas.toList()
     }
 
     fun bagOfWords(sentence: String): IntArray {

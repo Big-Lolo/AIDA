@@ -13,6 +13,8 @@ android {
     namespace "com.example.aida"
     compileSdk 34
 
+
+
     sourceSets {
         main {
             python.srcDir "src/main/python"
@@ -75,26 +77,25 @@ android {
 
 
 dependencies {
+    testImplementation("junit:junit:4.10") {
+        exclude group: "org.hamcrest"
+    }
 
+    
     implementation('androidx.core:core-ktx:1.12.0')
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation('com.google.android.material:material:1.10.0')
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation('androidx.core:core-splashscreen:1.0.1')
     implementation('org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0')
     implementation 'org.tensorflow:tensorflow-lite-support:0.2.0'
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0"
     implementation "org.apache.commons:commons-lang3:3.12.0"
+    implementation 'org.apache.opennlp:opennlp-tools:1.9.3'
+    implementation 'edu.stanford.nlp:stanford-corenlp:4.5.4'
+
     //implementation 'edu.stanford.nlp:stanford-corenlp:4.4.0'
-
-
-
-
-
-
 
 
     def room_version = "2.6.0"

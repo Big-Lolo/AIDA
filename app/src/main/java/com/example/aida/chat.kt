@@ -137,6 +137,11 @@ class chat : Fragment() {
                     messageDao.insert(Message(0, text.text.toString(), true, Date().time.toLong(), false))
                     val result = predicer.responseClass(text.text.toString())
                     print(result)
+                    val respuesta = result.first
+                    val functions = result.second
+                    print(respuesta)
+                    messageDao.insert(Message(0, respuesta, false, Date().time.toLong(), false))
+
                     val msg = messageDao.getAll()
                     messagechat = msg
                 }

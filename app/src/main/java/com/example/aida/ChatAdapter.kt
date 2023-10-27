@@ -64,7 +64,7 @@ class ChatAdapter(private var dataSet: List<Message>) :
             viewHolder.textView.setBackgroundResource(R.drawable.rounded_circle_left_arrow)
             layoutParamsText.removeRule(RelativeLayout.START_OF)
             layoutParamsText.addRule(RelativeLayout.END_OF, R.id.userImageView)
-            viewHolder.textView.layoutParams = layoutParams
+            viewHolder.textView.layoutParams = layoutParamsText
 
             //image pos
             layoutParams.removeRule(RelativeLayout.ALIGN_PARENT_END)
