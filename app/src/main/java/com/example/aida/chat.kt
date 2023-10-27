@@ -1,6 +1,12 @@
 package com.example.aida
 
+import android.content.Intent
 import android.os.Bundle
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +30,7 @@ import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.common.FileUtil
 import java.util.Calendar
 import java.util.Date
+typealias SpeechRecognitionCallback = (String) -> Unit
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -89,6 +96,22 @@ class chat : Fragment() {
         if (! Python.isStarted()) {
             Python.start(AndroidPlatform(requireContext()));
         }
+        val ElBoton2 = view?.findViewById<Button>(R.id.btn_send)
+        val text2 = view?.findViewById<EditText>(R.id.et_message)
+        text2?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!s.isNullOrEmpty()) {
+                    ElBoton2?.text = "Enviar"
+                } else {
+                    ElBoton2?.text = "Microfono"
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+
+        })
 
         return rootView
     }
@@ -116,6 +139,7 @@ class chat : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val ElBoton = view.findViewById<Button>(R.id.btn_send)
+        val text = view.findViewById<EditText>(R.id.et_message)
 
         ElBoton.setOnClickListener {btn_sender()}
         // Inflate the layout for this fragment
@@ -124,51 +148,148 @@ class chat : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = adapter
 
+
+        text?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!s.isNullOrEmpty()) {
+                    ElBoton?.text = "Enviar"
+                } else {
+                    ElBoton?.text = "Microfono"
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+
+        })
+
+
+
     }
 
     fun btn_sender(){
         val text = view?.findViewById<EditText>(R.id.et_message)
-        if (text != null && text.toString() != "") {
-            //messagechat.add(MessageProps(text.text.toString(), true))
+        val btnSend = view?.findViewById<Button>(R.id.btn_send)
 
+        if (btnSend != null) {
+            if (btnSend.text == "Microfono") {
+                println("Enviada señal del speech")
+                startSpeechToText { voiceText ->
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO) {
+                            messageDao.insert(Message(
+                                    0,
+                                    ("#VOZ: $voiceText"),
+                                    true,
+                                    Date().time.toLong(),
+                                    false
+                                )
+                            )
+                            val result = predicer.responseClass(voiceText.toString())
+                            val respuesta = result.first
+                            val functions = result.second
+                            messageDao.insert(Message(0, respuesta, false, Date().time.toLong(), false))
+                            val msg = messageDao.getAll()
+                            messagechat = msg
+                        }
+                        withContext(Dispatchers.Main) {
+                            adapter.updateData(messagechat)
+                            adapter.notifyDataSetChanged()
+                            recyclerView.smoothScrollToPosition(messagechat.size - 1)
+                        }
+                    }
 
-            lifecycleScope.launch {
-                withContext(Dispatchers.IO){
-                    messageDao.insert(Message(0, text.text.toString(), true, Date().time.toLong(), false))
-                    val result = predicer.responseClass(text.text.toString())
-                    print(result)
-                    val respuesta = result.first
-                    val functions = result.second
-                    print(respuesta)
-                    messageDao.insert(Message(0, respuesta, false, Date().time.toLong(), false))
-
-                    val msg = messageDao.getAll()
-                    messagechat = msg
                 }
-                withContext(Dispatchers.Main) {
-                    adapter.updateData(messagechat)
-                    adapter.notifyDataSetChanged()
-                    recyclerView.smoothScrollToPosition(messagechat.size - 1)
-                }
 
+
+                }
+            }else {
+                if (text != null && text.toString() != "") {
+                    //messagechat.add(MessageProps(text.text.toString(), true))
+
+
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO) {
+                            messageDao.insert(
+                                Message(
+                                    0,
+                                    text.text.toString(),
+                                    true,
+                                    Date().time.toLong(),
+                                    false
+                                )
+                            )
+                            val result = predicer.responseClass(text.text.toString())
+                            val respuesta = result.first
+                            val functions = result.second
+                            print(respuesta)
+                            messageDao.insert(Message(0, respuesta, false, Date().time.toLong(), false))
+
+                            val msg = messageDao.getAll()
+                            messagechat = msg
+                        }
+                        withContext(Dispatchers.Main) {
+                            adapter.updateData(messagechat)
+                            adapter.notifyDataSetChanged()
+                            recyclerView.smoothScrollToPosition(messagechat.size - 1)
+                        }
+
+                    }
+                }
+                text?.setText("")
+            }
+        }
+
+
+    private fun startSpeechToText(callback: SpeechRecognitionCallback) {
+        val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(requireContext())
+        val speechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+
+        speechRecognizer.setRecognitionListener(object : RecognitionListener {
+            override fun onReadyForSpeech(params: Bundle?) {
+                println("Listo para grabar")
             }
 
+            override fun onBeginningOfSpeech() {
+                println("Empezando a hablar...")
+            }
 
+            override fun onRmsChanged(rmsdB: Float) {}
 
-        }
-        val itemCount = adapter.getItemCount()
+            override fun onBufferReceived(buffer: ByteArray?) {}
 
-        print("size con el metodo getItemCount del adapter: $itemCount")
-        println("El size de message fuera del proceso lyfecyclescope: " + messagechat.size)
+            override fun onEndOfSpeech() {
+                println("Finalizacion de la grabacion")
+            }
 
-        text?.setText("")
+            override fun onError(error: Int) {}
 
+            override fun onResults(results: Bundle?) {
+                val voiceText = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.get(0)
+                if (!voiceText.isNullOrBlank()) {
+                    // Hacer algo con el texto reconocido, como mostrarlo en un EditText.
+                    println("Texto Reconocido: $voiceText")
+                    callback(voiceText)
 
+                }
+            }
+
+            override fun onPartialResults(partialResults: Bundle?) {}
+
+            override fun onEvent(eventType: Int, params: Bundle?) {}
+        })
+
+        speechRecognizer.startListening(speechRecognizerIntent)
     }
 
-
-
 }
+
+
+
+
 
 
 
