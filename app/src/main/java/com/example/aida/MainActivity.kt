@@ -1,8 +1,10 @@
 package com.example.aida
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
@@ -13,15 +15,15 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
 
+    @RequiresApi(Build.VERSION_CODES.Q)
+    @SuppressLint("ServiceCast")
     override fun onCreate(savedInstanceState: Bundle?) {
-        val serviceIntent = Intent(this, VoiceRecognitionService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //startForegroundService(serviceIntent)
-
-        } else {
-            startService(serviceIntent)
-        }
         super.onCreate(savedInstanceState)
+        val serviceIntent = Intent(this, VoiceRecognitionService::class.java)
+        startService(serviceIntent)
+
+
+
         Thread.sleep(2000)
         installSplashScreen()
         binding = ActivityMainBinding.inflate(layoutInflater)
