@@ -114,7 +114,7 @@
                 <RelativeLayout
                     android:id="@+id/bottom_view"
                     android:layout_width="match_parent"
-                    android:layout_height="3800dp"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/homeslip">
 
                     <TextView
@@ -128,20 +128,29 @@
                         android:layout_marginTop="60dp"
                         android:layout_marginLeft="30dp"
                         android:textStyle="normal"
-                        android:textDecoration="underline"
                         />
+                    <Button
+                        android:id="@+id/wasouski"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/myTextVieweeees"
+                        android:layout_marginTop="60dp"
+                        android:layout_marginLeft="180dp"
+                        android:background="@drawable/addbutton"/>
 
 
                     <HorizontalScrollView
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:layout_below="@id/myTextVieweeees"
-                        android:layout_marginTop="10dp">
+                        android:layout_marginTop="10dp"
+                        android:id="@+id/scrollAlarm"
+                        android:layout_marginLeft="40dp"
+                        android:layout_marginRight="30dp">
 
                         <LinearLayout
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal">
+                            android:layout_height="match_parent">
 
                             <!-- Agrega aquí los contenedores cuadrados -->
                             <LinearLayout
@@ -149,30 +158,71 @@
                                 android:layout_height="60dp"
                                 android:background="@color/black"
                                 android:layout_marginRight="15dp"
-                                android:layout_marginLeft="15dp"
-
-                                android:orientation="vertical" />
+                                android:layout_marginLeft="15dp" />
 
                             <LinearLayout
                                 android:layout_width="60dp"
                                 android:layout_height="60dp"
                                 android:background="@color/black"
-                                android:layout_marginRight="15dp"
-
-                                android:orientation="vertical" />
+                                android:layout_marginRight="15dp" />
 
                             <LinearLayout
                                 android:layout_width="60dp"
                                 android:layout_height="60dp"
                                 android:background="@color/black"
-                                android:layout_marginRight="15dp"
-
-                                android:orientation="vertical" />
+                                android:layout_marginRight="15dp"/>
 
                             <!-- Agrega más contenedores según sea necesario -->
 
                         </LinearLayout>
                     </HorizontalScrollView>
+
+                    <TextView
+                        android:id="@+id/events"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/bebas_neue"
+                        android:text="Events"
+                        android:textColor="@color/black"
+                        android:textSize="35dp"
+                        android:layout_below="@+id/scrollAlarm"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginLeft="30dp"/>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="30dp"
+                        android:background="@color/black"
+                        android:layout_below="@+id/events"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginLeft="40dp"
+                        android:id="@+id/boxevents"/>
+
+                    <TextView
+                        android:id="@+id/status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/bebas_neue"
+                        android:text="Status"
+                        android:textColor="@color/black"
+                        android:textSize="35dp"
+                        android:layout_below="@+id/boxevents"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginLeft="30dp"/>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="30dp"
+                        android:background="@color/black"
+                        android:layout_below="@+id/status"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginLeft="40dp"
+                        android:id="@+id/boxstatus"
+                        android:layout_marginBottom="50dp"/>
 
 
 
