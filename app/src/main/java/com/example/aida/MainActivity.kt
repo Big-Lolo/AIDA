@@ -1,13 +1,10 @@
 package com.example.aida
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.speech.RecognizerIntent
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
 import com.example.aida.databinding.ActivityMainBinding
@@ -21,13 +18,11 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("ServiceCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val serviceIntent = Intent(this, VoiceRecognitionService::class.java)
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        ContextCompat.startForegroundService(this, serviceIntent)
-        } else {
-            startService(serviceIntent)
-        }
+        //val serviceIntent = Intent(this, VoiceRecognitionService::class.java)
+        //ContextCompat.startForegroundService(this, serviceIntent)
+
+
+
 
 
 
@@ -77,3 +72,4 @@ class MainActivity : AppCompatActivity() {
 
 
 }
+

@@ -9,12 +9,10 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="@drawable/gradient"
-        tools:context=".Home">
-
-        <!-- TODO: Update blank fragment layout -->
-
+        tools:context=".Home"
+        android:id="@+id/phatherContainerB">
 
         <TextView
             android:id="@+id/Bienvenida"
@@ -48,17 +46,12 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.033" />
 
-
-        <!-- Auto layout, variables, and unit scale are not yet supported -->
-
-
         <TextView
             android:id="@+id/Fecha_Completa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/bebas_neue"
             android:text="14 de Noviembre de 2023"
-
             android:textColor="@color/colorPrimary"
             android:textSize="22dp"
             app:layout_constraintBottom_toBottomOf="@+id/view"
@@ -82,20 +75,6 @@
             app:layout_constraintTop_toTopOf="@+id/view"
             app:layout_constraintVertical_bias="0.106" />
 
-
-        <View
-            android:id="@+id/nd_half_bg"
-            android:layout_width="match_parent"
-            android:layout_height="368dp"
-
-            android:background="#FAFAFA"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
-
         <TextClock
             android:id="@+id/textClock2"
             android:layout_width="wrap_content"
@@ -109,6 +88,39 @@
             app:layout_constraintTop_toTopOf="@+id/view"
             app:layout_constraintVertical_bias="0.616" />
 
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="730dp"
+            android:layout_weight="0.4"
+            app:layout_constraintBottom_toBottomOf="@+id/phatherContainerB"
+            android:fillViewport="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="370dp"
+                android:orientation="vertical"
+                >
+
+                <View
+                    android:id="@+id/nd_half_bg"
+                    android:layout_width="match_parent"
+                    android:layout_height="360dp"
+                    android:background="#00837222" />
+
+                <!-- Aquí puedes agregar los elementos que quieres que ocupen el resto de la pantalla -->
+
+                <View
+                    android:id="@+id/bottom_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="3800dp"
+                    android:background="@drawable/homeslip"/>
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </ScrollView>

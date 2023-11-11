@@ -34,6 +34,7 @@ import org.tensorflow.lite.support.common.FileUtil
 import java.util.Calendar
 import java.util.Date
 
+
 typealias SpeechRecognitionCallback = (String) -> Unit
 
 
@@ -91,6 +92,8 @@ class chat : Fragment(), OnInitListener  {
                 //recyclerView.smoothScrollToPosition(messagechat.size - 1)
             }
         }
+
+
     }
 
     override fun onCreateView(
@@ -321,6 +324,9 @@ class chat : Fragment(), OnInitListener  {
 
 
 }
+
+
+
 
 
 
