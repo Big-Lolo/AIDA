@@ -1,14 +1,16 @@
 package com.example.aida
 
+import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import java.text.SimpleDateFormat
-import java.util.*
-import android.content.Context
+import java.util.Date
+import java.util.Locale
 
 
 
@@ -66,7 +68,21 @@ class Home : Fragment() {
         var textView = view.findViewById<TextView>(R.id.Bienvenida)
         textView.text = "Bienvenido de nuevo ${username}"
 
+        //Asignación del boton de Alarmas
+        val wasouskiButton: Button = view.findViewById(R.id.wasouski)
+        wasouskiButton.setOnClickListener {
+            // Reemplazar este fragmento con otro fragmento
+            val fragmentManager = requireActivity().supportFragmentManager
+            val fragmentTransaction = fragmentManager.beginTransaction()
 
+            // Reemplazar "NuevoFragmento" con el nombre de tu nuevo fragmento
+            val nuevoFragmento = AlarmFragment()
+
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.phatherContainerB, nuevoFragmento)
+                .addToBackStack(null) // Agregar a la pila de retroceso
+                .commit()
+        }
 
 
 

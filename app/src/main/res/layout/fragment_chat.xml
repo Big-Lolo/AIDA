@@ -38,6 +38,7 @@
             android:text="Microfono"
             android:textColor="@android:color/white" />
 
+
     </LinearLayout>
 
 

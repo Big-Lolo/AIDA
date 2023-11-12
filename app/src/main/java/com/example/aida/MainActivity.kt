@@ -44,10 +44,6 @@ class MainActivity : AppCompatActivity() {
 
                 else ->{
 
-
-
-
-
                 }
             }
 
