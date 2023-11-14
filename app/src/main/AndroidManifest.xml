@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.example.aida"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -47,6 +48,9 @@
         <activity android:name=".AlarmActDisable">
             <!-- Otros atributos de la actividad -->
         </activity>
+
+        <activity android:name=".LockScreenActivity"
+            android:showOnLockScreen="true"/>
 
 
 
