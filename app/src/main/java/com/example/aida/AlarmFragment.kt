@@ -1,20 +1,14 @@
 package com.example.aida
 
 import android.app.Activity
-import android.app.AlarmManager
 import android.app.DatePickerDialog
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
-import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,9 +18,9 @@ import android.widget.TextView
 import android.widget.TimePicker
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SwitchCompat
-import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.example.aida.utils.AlarmTools.Companion.setAlarm
 import java.sql.Date
 import java.text.SimpleDateFormat
 
@@ -44,7 +38,11 @@ class AlarmFragment : Fragment() {
         "Domingo" to false
     )
 
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.d("AlarmFragment", "onCreate")
+        // Resto del código
+    }
 
     override fun onCreateView(
 
@@ -215,7 +213,25 @@ class AlarmFragment : Fragment() {
             val nameAlarm = view.findViewById<EditText>(R.id.eventss)
             var nombre = nameAlarm.text.toString()
 
-            context?.let { it1 -> setAlarm(enableTone = ToneState,  alarmTone = selectedAlarmTone, context = it1, hour =hour, minute = minute, enableVibration = VibrationState, alarmName = nombre ) }
+            //context?.let { it1 -> setAlarm(enableTone = ToneState,  alarmTone = selectedAlarmTone, context = it1, hour =hour, minute = minute, enableVibration = VibrationState, alarmName = nombre ) }
+            //context?.let { it1 -> AlarmTools.setAlarm(sound = ToneState,  tone = selectedAlarmTone, context = it1, hour =hour, minute = minute, vibration = VibrationState, name = nombre, repeatDays = listOf(Calendar.MONDAY, Calendar.FRIDAY), volume = 0.6f) }
+
+            val calendar = Calendar.getInstance()
+            val currentDate = calendar.time // Esto te da la fecha actual como un objeto Date
+
+            // Ahora, puedes utilizar currentDate para asignar la fecha actual al Calendar si fechaSeleccionada es null
+            if (fechaSeleccionada == null) {
+                calendar.time = currentDate
+            }else{
+                calendar.time = fechaSeleccionada
+            }
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH) + 1
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+
+            selectedAlarmTone?.let { it1 -> setAlarm(requireContext(), year, month, day, hour, minute, nombre, volumenLevel = 50, toneUri = it1) }
+
         }
 
 
@@ -252,89 +268,5 @@ class AlarmFragment : Fragment() {
         }
     }
 
-    fun setAlarm(
-        context: Context,
-        hour: Int,
-        minute: Int,
-        alarmName: String,
-        alarmTone: Uri?,
-        enableVibration: Boolean,
-        enableTone: Boolean
-    ) {
-        val alarmManager = context.applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, AlarmReceiver::class.java)
 
-        val extras = Bundle()
-        extras.putString("ALARM_NAME", alarmName)
-        if (alarmTone != null) {
-            extras.putString("ALARM_TONE", alarmTone.toString())
-        }
-        intent.putExtras(extras)
-
-        val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = System.currentTimeMillis()
-        calendar.set(Calendar.HOUR_OF_DAY, hour)
-        calendar.set(Calendar.MINUTE, minute)
-        calendar.set(Calendar.SECOND, 0)
-
-
-       // calendar.set(Calendar.YEAR, year)
-        //calendar.set(Calendar.MONTH, month) // Recuerda que el mes comienza desde 0 (enero)
-        //calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-
-        if (enableTone) {
-            val alarmSound: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-            val audioAttributes = AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_ALARM)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .build()
-
-
-
-
-            val channelId = "channelId"
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // Crear un canal de notificación
-                val channel = NotificationChannel(
-                    channelId,
-                    "Nombre del Canal",
-                    NotificationManager.IMPORTANCE_DEFAULT
-                ).apply {
-                    description = "Descripción del Canal"
-                    // Configurar otras propiedades del canal, como el sonido, la luz, etc.
-                }
-
-                // Registrar el canal con el NotificationManager
-                val notificationManager: NotificationManager =
-                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.createNotificationChannel(channel)
-            }
-
-
-            val builder = NotificationCompat.Builder(context, "channelId")
-                .setSound(alarmSound)
-                .setAutoCancel(true)
-                .setDefaults(Notification.DEFAULT_LIGHTS)
-                .setContentTitle("Alarma")
-                .setContentText("¡Hora de despertar!")
-                .setSmallIcon(R.drawable.logo)
-
-
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-            if (enableVibration) {
-                builder.setVibrate(longArrayOf(1000, 1000, 1000, 1000, 1000)) // Patrón de vibración
-                builder.setDefaults(Notification.DEFAULT_VIBRATE)
-            }
-
-            val notification = builder.build()
-            val ALARM_NOTIFICATION_ID = 1
-            notificationManager.notify(ALARM_NOTIFICATION_ID, notification)
-        }
-
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
-    }
 }

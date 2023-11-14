@@ -1,6 +1,9 @@
 package com.example.aida
 
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
@@ -20,9 +23,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         //val serviceIntent = Intent(this, VoiceRecognitionService::class.java)
         //ContextCompat.startForegroundService(this, serviceIntent)
+        createNotificationChannel()
 
-
-
+        //Para llamar al servicio background que tiene la activity de la desactivacion de alarma.
+        val serviceIntent = Intent(this, MyBackgroundService::class.java)
+        this.startService(serviceIntent)
 
 
 
@@ -30,20 +35,19 @@ class MainActivity : AppCompatActivity() {
         installSplashScreen()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        replaceFragment(Home())
+        replaceFragment(AlarmFragment())
 
 
 
         binding.bottomNavigationView.setOnItemSelectedListener {
 
             when(it.itemId){
-                R.id.home -> replaceFragment(Home())
+                R.id.home -> replaceFragment(AlarmFragment())
                 R.id.chat -> replaceFragment(chat())
                 R.id.logs -> replaceFragment(logs())
                 R.id.settings -> replaceFragment(settings())
 
                 else ->{
-
                 }
             }
 
@@ -63,6 +67,21 @@ class MainActivity : AppCompatActivity() {
 
         // Verifica si el fragmento es una instancia de Home y luego llama a changeDate()
         if (fragment is Home) {
+        }
+    }
+
+
+    private fun createNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+
+            val name : CharSequence = "Aida's Notification"
+            val description = "Notification of AIDA"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel("channelid", name, importance)
+            channel.description = description
+            val notificationManager = getSystemService(NotificationManager::class.java)
+
+            notificationManager.createNotificationChannel(channel)
         }
     }
 

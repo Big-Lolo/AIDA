@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.example.aida"
     xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
 
 
@@ -24,6 +28,11 @@
             android:enabled="true">
         </service>
 
+        <service
+            android:name=".MyBackgroundService"
+            android:enabled="true">
+        </service>
+
         <activity
             android:theme="@style/Theme.AppCompat.SpalshScreen"
             android:name=".MainActivity"
@@ -34,12 +43,31 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".AlarmActDisable">
+            <!-- Otros atributos de la actividad -->
+        </activity>
+
+
+
         <receiver android:name=".AlarmReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="ACTION_DEACTIVATE_ALARM" />
             </intent-filter>
         </receiver>
+
+        <receiver
+            android:name=".BootReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
     </application>
+
 
 </manifest>
