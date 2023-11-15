@@ -9,6 +9,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.aida.utils.AlarmTools.Companion.getAllAlarms
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -30,6 +33,8 @@ class Home : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private var listener: OnHomeInteractionListener? = null
+    private lateinit var recyclerViewAlarms: RecyclerView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,12 +48,26 @@ class Home : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        var view = inflater.inflate(R.layout.fragment_home, container, false)
+
+        //RecyclerView de las alarmas
+        recyclerViewAlarms = view.findViewById<RecyclerView>(R.id.recyclerViewAlarms)
+        recyclerViewAlarms.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
+        val dataList = getAllAlarms(requireContext())
+        val adapter = HorizontalAdapter(requireContext(), dataList)
+        recyclerViewAlarms.adapter = adapter
+
+
+
+
+
+
         // Inflate the layout for this fragment
         val currentDate = Date()
         val dateFormat = SimpleDateFormat("dd 'de' MMMM 'de' yyyy", Locale.getDefault())
         val formattedDate = dateFormat.format(currentDate)
 
-        var view = inflater.inflate(R.layout.fragment_home, container, false)
         var fecha = view.findViewById<TextView>(R.id.Fecha_Completa)
         fecha.text = formattedDate
 

@@ -220,8 +220,8 @@ class AlarmFragment : Fragment() {
             val nameAlarm = view.findViewById<EditText>(R.id.eventss)
             var nombre = nameAlarm.text.toString()
 
-            //context?.let { it1 -> setAlarm(enableTone = ToneState,  alarmTone = selectedAlarmTone, context = it1, hour =hour, minute = minute, enableVibration = VibrationState, alarmName = nombre ) }
-            //context?.let { it1 -> AlarmTools.setAlarm(sound = ToneState,  tone = selectedAlarmTone, context = it1, hour =hour, minute = minute, vibration = VibrationState, name = nombre, repeatDays = listOf(Calendar.MONDAY, Calendar.FRIDAY), volume = 0.6f) }
+            var timeAplazamiento = 5 //5 minutos de aplazamiento default. Ya se hará el selector
+
 
             val calendar = Calendar.getInstance()
             val currentDate = calendar.time // Esto te da la fecha actual como un objeto Date
@@ -236,12 +236,12 @@ class AlarmFragment : Fragment() {
             val month = calendar.get(Calendar.MONTH) + 1
             val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-            val todosDiasFalse = diasSemanaMap.values.all { it == false }
+            val todosDiasFalse = diasSemanaMap.values.all { !it }
             if (todosDiasFalse){
                 dayList = false
             }
 
-            selectedAlarmTone?.let { it1 -> setAlarm(requireContext(), year, month, day, hour, minute, nombre, volumenLevel = 50, toneUri = it1, diasRepetirMap = diasSemanaMap, dayList = dayList) }
+            selectedAlarmTone?.let { it1 -> setAlarm(requireContext(), year, month, day, hour, minute, nombre, volumenLevel = 50, toneUri = it1, diasRepetirMap = diasSemanaMap, dayList = dayList, vibrate = VibrationState, aplazarTime = timeAplazamiento) }
 
         }
 
@@ -291,7 +291,6 @@ class AlarmFragment : Fragment() {
             val uri: Uri? = result.data?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
             // Hacer algo con la URI de la alarma seleccionada
             if (uri != null) {
-
                 selectedAlarmTone = uri
             } else {
                 // El usuario no seleccionó ninguna alarma

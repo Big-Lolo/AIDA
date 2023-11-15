@@ -13,27 +13,64 @@ import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-
+import com.example.aida.utils.AlarmTools.Companion.getAllAlarms
 
 
 class AlarmReceiver : BroadcastReceiver() {
     @SuppressLint("MissingPermission")
     override fun onReceive(contexte: Context?, intent: Intent?) {
+
+
+
+
+        val allAlarms = contexte?.let { getAllAlarms(it) }
+
+        if (allAlarms != null) {
+            for (alarm in allAlarms) {
+                println("Alarm ID: ${alarm.id}")
+                println("Name: ${alarm.alarmName}")
+                println("Tone URI: ${alarm.toneUri}")
+                println("Volume Level: ${alarm.volumeLevel}")
+                println("-------------")
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         val alarmName = intent?.getStringExtra("alarmName")
         val toneUriString = intent?.getStringExtra("toneUri")
         val volumeLevel = intent?.getIntExtra("volumeLevel", 0) ?: 0
+        val vibrate = intent?.getBooleanExtra("vibrate", false)
         Log.d("BroadcastReciver", "Context is null: ${contexte == null}")
         val keyguardManager = contexte?.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
         val isScreenLocked = keyguardManager.isKeyguardLocked
-        val powerManager = contexte?.getSystemService(Context.POWER_SERVICE) as PowerManager
+        val powerManager = contexte.getSystemService(Context.POWER_SERVICE) as PowerManager
         val isScreenOn = powerManager.isInteractive
         Log.d("BroadcastReciver", "La pantalla esta $isScreenOn")
         if(isScreenLocked or !isScreenOn) {
 
-            contexte.showNotificationWithFullScreenIntent(true, contextex = contexte, toneUriString = toneUriString.toString(), volumeLevel = volumeLevel)
+            if (vibrate != null) {
+                contexte.showNotificationWithFullScreenIntent(true, contextex = contexte, toneUriString = toneUriString.toString(), volumeLevel = volumeLevel, vibrate = vibrate)
+            }
 
         } else {
-            contexte.showNotificationWithFullScreenIntent(contextex = contexte, toneUriString = toneUriString.toString(), volumeLevel = volumeLevel)
+            if (vibrate != null) {
+                contexte.showNotificationWithFullScreenIntent(contextex = contexte, toneUriString = toneUriString.toString(), volumeLevel = volumeLevel, vibrate = vibrate)
+            }
         }
 
         if (intent?.action == "TU_ACCION_DESACTIVAR") {
@@ -81,7 +118,8 @@ class AlarmReceiver : BroadcastReceiver() {
         description: String = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
         contextex : Context,
         toneUriString: String,
-        volumeLevel:Int
+        volumeLevel:Int,
+        vibrate:Boolean
 
 
     ) {
@@ -128,6 +166,8 @@ class AlarmReceiver : BroadcastReceiver() {
             val serviceIntent = Intent(contextex, MyBackgroundService::class.java)
             serviceIntent.putExtra("toneUri", toneUri)
             serviceIntent.putExtra("volumeLevel", volumeLevel)
+            serviceIntent.putExtra("vibrate", vibrate)
+
             contextex.startService(serviceIntent)
 
         }

@@ -8,6 +8,7 @@ import android.content.Intent
 import android.icu.util.Calendar
 import android.net.Uri
 import com.example.aida.AlarmReceiver
+import com.google.gson.Gson
 
 class AlarmTools {
 
@@ -28,7 +29,8 @@ class AlarmTools {
 
         @SuppressLint("ScheduleExactAlarm")
         fun setAlarm(context: Context,
-                     year: Int, month: Int,
+                     year: Int,
+                     month: Int,
                      day: Int,
                      hour: Int,
                      minute: Int,
@@ -36,13 +38,15 @@ class AlarmTools {
                      toneUri: Uri,
                      volumenLevel: Int,
                      diasRepetirMap: Map<String, Boolean>,
-                     dayList:Boolean
+                     dayList:Boolean,
+                     vibrate:Boolean,
+                     aplazarTime:Int
         ) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
             //new
             val intent = Intent(context, AlarmReceiver::class.java)
-            val requestCode = 0 // Puedes usar un código único aquí
+            val requestCode = generateUniqueAlarmId(context)  //ID UNICA
             val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
@@ -94,11 +98,91 @@ class AlarmTools {
                     AlarmManager.AlarmClockInfo(calendar.timeInMillis, pendingIntent),
                     pendingIntent
                 )
+                val alarmDetails = AlarmDetails(
+                    requestCode,  // Utilizando el requestCode como ID único
+                    alarmName,
+                    toneUri.toString(),
+                    volumenLevel,
+                    vibrate,
+                    aplazarTime,
+                    year,
+                    month,
+                    day,
+                    dayList,
+                    diasRepetirMap,
+                    hour,
+                    minute
+                )
+                val sharedPreferences = context.getSharedPreferences("AlarmPreferences", Context.MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+                editor.putString("AlarmID_${requestCode}", alarmDetails.toJson())
+                editor.apply()
             } catch (e: SecurityException) {
                 println("Error try catch $e")
             }
+        }
+
+
+        fun getAllAlarms(context: Context): List<AlarmDetails> {
+            val sharedPreferences = context.getSharedPreferences("AlarmPreferences", Context.MODE_PRIVATE)
+            val alarmKeys = sharedPreferences.all.keys
+
+            val alarmList = mutableListOf<AlarmDetails>()
+
+            for (key in alarmKeys) {
+                val alarmJson = sharedPreferences.getString(key, null)
+                if (alarmJson != null) {
+                    val alarmDetails = AlarmDetails.fromJson(alarmJson)
+                    alarmList.add(alarmDetails)
+                }
+            }
+
+            return alarmList
         }
     }
 
 
 }
+
+
+
+fun generateUniqueAlarmId(context: Context): Int {
+    val sharedPreferences = context.getSharedPreferences("IdPreferences", Context.MODE_PRIVATE)
+    val lastGeneratedId = sharedPreferences.getInt("LastGeneratedId", 0)
+
+    // Genera un nuevo ID único
+    val newId = lastGeneratedId + 1
+
+    // Guarda el nuevo ID en SharedPreferences
+    sharedPreferences.edit().putInt("LastGeneratedId", newId).apply()
+
+    return newId
+}
+
+data class AlarmDetails(
+    val id: Int,
+    val alarmName: String,
+    val toneUri: String,
+    val volumeLevel: Int,
+    val vibrate:Boolean,
+    val aplazamiento: Int,
+    val year: Int,
+    val month: Int,
+    val day: Int,
+    val dayList:Boolean,
+    val diasRepetirMap: Map<String, Boolean>,
+    val hour: Int,
+    val minute: Int
+    // Otros detalles de la alarma que necesites
+) {
+    fun toJson(): String {
+        return Gson().toJson(this)
+    }
+
+    companion object {
+        fun fromJson(json: String): AlarmDetails {
+            return Gson().fromJson(json, AlarmDetails::class.java)
+        }
+    }
+}
+
