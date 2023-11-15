@@ -53,6 +53,8 @@ class AlarmReceiver : BroadcastReceiver() {
             val notificationManager = contexte.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.cancel(123)
 
+
+
         }
 
     }
