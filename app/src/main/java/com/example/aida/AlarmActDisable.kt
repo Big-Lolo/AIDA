@@ -120,6 +120,8 @@ class AlarmActDisable : AppCompatActivity() {
                         val intent = Intent(this, AlarmReceiver::class.java)
                         intent.action = "TU_ACCION_DESACTIVAR"
                         sendBroadcast(intent)
+                        val serviceIntent = Intent(this, MyBackgroundService::class.java)
+                        this.stopService(serviceIntent)
                         this.finish()
                     }
 

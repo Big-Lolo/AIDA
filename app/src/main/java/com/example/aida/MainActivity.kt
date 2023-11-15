@@ -3,7 +3,6 @@ package com.example.aida
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
@@ -13,7 +12,7 @@ import androidx.fragment.app.Fragment
 import com.example.aida.databinding.ActivityMainBinding
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), Home.OnHomeInteractionListener {
 
     private lateinit var binding : ActivityMainBinding
 
@@ -26,8 +25,7 @@ class MainActivity : AppCompatActivity() {
         createNotificationChannel()
 
         //Para llamar al servicio background que tiene la activity de la desactivacion de alarma.
-        val serviceIntent = Intent(this, MyBackgroundService::class.java)
-        this.startService(serviceIntent)
+
 
 
 
@@ -35,31 +33,26 @@ class MainActivity : AppCompatActivity() {
         installSplashScreen()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        replaceFragment(AlarmFragment())
+        replaceFragment(Home())
 
 
 
         binding.bottomNavigationView.setOnItemSelectedListener {
 
             when(it.itemId){
-                R.id.home -> replaceFragment(AlarmFragment())
+                R.id.home -> replaceFragment(Home())
                 R.id.chat -> replaceFragment(chat())
                 R.id.logs -> replaceFragment(logs())
                 R.id.settings -> replaceFragment(settings())
-
                 else ->{
                 }
             }
 
             true
         }
-
-
-
-
     }
 
-    private fun replaceFragment(fragment: Fragment) {
+    fun replaceFragment(fragment: Fragment) {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frame_layout, fragment)
@@ -82,6 +75,15 @@ class MainActivity : AppCompatActivity() {
             val notificationManager = getSystemService(NotificationManager::class.java)
 
             notificationManager.createNotificationChannel(channel)
+        }
+    }
+    override fun onAlarmButtonClicked() {
+        replaceFragment(AlarmFragment())
+    }
+
+    companion object {
+        fun replaceFragmentt(fragment: Fragment, activity: MainActivity) {
+            activity.replaceFragment(fragment)
         }
     }
 

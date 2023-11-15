@@ -37,6 +37,7 @@ class AlarmFragment : Fragment() {
         "Sábado" to false,
         "Domingo" to false
     )
+    private var dayList : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +57,10 @@ class AlarmFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+
+
 
         // Encuentra el TimePicker por su ID
         val picker: TimePicker = view.findViewById(R.id.datePicker1)
@@ -81,9 +86,10 @@ class AlarmFragment : Fragment() {
                 diasSeleccionados.delete(diasSeleccionados.length - 2, diasSeleccionados.length)
             }
             val diasString = diasSeleccionados.toString()
-
+            dayList = true
             return if (diasString.isNotEmpty()) {
                 "Cada $diasString"
+
             } else {
                 ""
             }
@@ -102,7 +108,8 @@ class AlarmFragment : Fragment() {
 
                         val text = vieww.findViewById<TextView>(R.id.textView3111)
                         val calendarHoy = Calendar.getInstance()
-
+                        dayList = false
+                        restartListDay()
                         if (selectedCalendar.get(Calendar.YEAR) == calendarHoy.get(Calendar.YEAR) &&
                             selectedCalendar.get(Calendar.DAY_OF_YEAR) == calendarHoy.get(
                                 Calendar.DAY_OF_YEAR
@@ -229,22 +236,48 @@ class AlarmFragment : Fragment() {
             val month = calendar.get(Calendar.MONTH) + 1
             val day = calendar.get(Calendar.DAY_OF_MONTH)
 
+            val todosDiasFalse = diasSemanaMap.values.all { it == false }
+            if (todosDiasFalse){
+                dayList = false
+            }
 
-            selectedAlarmTone?.let { it1 -> setAlarm(requireContext(), year, month, day, hour, minute, nombre, volumenLevel = 50, toneUri = it1) }
+            selectedAlarmTone?.let { it1 -> setAlarm(requireContext(), year, month, day, hour, minute, nombre, volumenLevel = 50, toneUri = it1, diasRepetirMap = diasSemanaMap, dayList = dayList) }
 
         }
 
 
         cancelButton.setOnClickListener {
-            parentFragmentManager.popBackStack()
-        }
+            val nuevoFragmento = Home()
+
+            // Reemplazar el fragmento actual con el nuevo fragmento
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.phatherContainerB, nuevoFragmento)
+                .addToBackStack(null) // Agregar a la pila de retroceso
+                .commit()
+
+            // Eliminar el fragmento actual
+            requireActivity().supportFragmentManager.beginTransaction()
+                .remove(this)
+                .commit()        }
 
 
 
 
     }
 
-    fun selectAlarmTone(view: View) {
+    private fun restartListDay(){
+        for (key in diasSemanaMap.keys) {
+            diasSemanaMap[key] = false
+        }
+        val diasSemanaIds = listOf(R.id.lunes, R.id.martes, R.id.miercoles, R.id.jueves, R.id.viernes, R.id.sabado, R.id.domingo)
+
+        for (id in diasSemanaIds) {
+            view?.findViewById<TextView>(id)
+                ?.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+        }
+
+    }
+    private fun selectAlarmTone(view: View) {
         val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
         // Configurar el intent según sea necesario, por ejemplo:
         intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)

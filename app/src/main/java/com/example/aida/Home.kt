@@ -2,6 +2,7 @@ package com.example.aida
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +29,7 @@ class Home : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var listener: OnHomeInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,24 +73,27 @@ class Home : Fragment() {
         //Asignación del boton de Alarmas
         val wasouskiButton: Button = view.findViewById(R.id.wasouski)
         wasouskiButton.setOnClickListener {
-            // Reemplazar este fragmento con otro fragmento
-            val fragmentManager = requireActivity().supportFragmentManager
-            val fragmentTransaction = fragmentManager.beginTransaction()
 
-            // Reemplazar "NuevoFragmento" con el nombre de tu nuevo fragmento
+            Log.d("Home tyagg", "Nuevo fragmento")
             val nuevoFragmento = AlarmFragment()
+            listener?.onAlarmButtonClicked()
 
+            /* Reemplazar el fragmento actual con el nuevo fragmento
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.phatherContainerB, nuevoFragmento)
                 .addToBackStack(null) // Agregar a la pila de retroceso
-                .commit()
+                .commit()*/
+
+            //MainActivity.replaceFragmentt(AlarmFragment(), MainActivity())
         }
 
 
 
         return view
     }
-
+    interface OnHomeInteractionListener {
+        fun onAlarmButtonClicked()
+    }
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -107,5 +112,19 @@ class Home : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnHomeInteractionListener) {
+            listener = context
+        } else {
+            throw RuntimeException("$context must implement OnHomeInteractionListener")
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
     }
 }

@@ -8,16 +8,13 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.media.AudioManager
-import android.media.Ringtone
-import android.media.RingtoneManager
 import android.net.Uri
 import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 
-private var ringtone: Ringtone? = null
+
 
 class AlarmReceiver : BroadcastReceiver() {
     @SuppressLint("MissingPermission")
@@ -47,21 +44,15 @@ class AlarmReceiver : BroadcastReceiver() {
             )
 
             val alarmManager = contexte.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val serviceIntent = Intent(contexte, MyBackgroundService::class.java)
+            contexte.stopService(serviceIntent)
             alarmManager.cancel(pendingIntent)
-            ringtone?.stop()
-
             val notificationManager = contexte.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.cancel(123)
-
-
 
         }
 
     }
-
-
-
-
 
 
     private fun Context.getFullScreenIntent(isLockScreen: Boolean): PendingIntent {
@@ -128,12 +119,17 @@ class AlarmReceiver : BroadcastReceiver() {
         contextex.let { NotificationManagerCompat.from(it) }.notify(123, builder.build())
 
         val toneUri = toneUriString.let { Uri.parse(it) }
-        val audioManager = contextex.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
         if (toneUri != null) {
-            ringtone = RingtoneManager.getRingtone(contextex, toneUri)
-            audioManager.setStreamVolume(AudioManager.STREAM_ALARM, volumeLevel, 0)
-            ringtone?.play()
+            //ringtone = RingtoneManager.getRingtone(contextex, toneUri)
+            //val audioManager = contextex.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            //audioManager.setStreamVolume(AudioManager.STREAM_ALARM, volumeLevel, 0)
+            //ringtone?.play()
+            val serviceIntent = Intent(contextex, MyBackgroundService::class.java)
+            serviceIntent.putExtra("toneUri", toneUri)
+            serviceIntent.putExtra("volumeLevel", volumeLevel)
+            contextex.startService(serviceIntent)
+
         }
 
     }
@@ -159,7 +155,11 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 
 
+    companion object {
 
+
+
+    }
 
 
 
