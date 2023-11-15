@@ -58,108 +58,125 @@ class AlarmReceiver : BroadcastReceiver() {
         }
 
     }
-}
 
 
 
 
 
 
+    private fun Context.getFullScreenIntent(isLockScreen: Boolean): PendingIntent {
+        Log.d("GetFullScreed", "El valor de locked es $isLockScreen")
+
+        val destination = if (isLockScreen)
+            AlarmActDisable::class.java
+
+        else
+            AlarmActDisable::class.java
+        val intent = Intent(this, destination)
+
+        // flags and request code are 0 for the purpose of demonstration
+        return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+    }
 
 
 
-private fun Context.getFullScreenIntent(isLockScreen: Boolean): PendingIntent {
-    Log.d("GetFullScreed", "El valor de locked es $isLockScreen")
-
-    val destination = if (isLockScreen)
-        LockScreenActivity::class.java
-
-    else
-        AlarmActDisable::class.java
-    val intent = Intent(this, destination)
-
-    // flags and request code are 0 for the purpose of demonstration
-    return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-}
+    private val LOCK_SCREEN_KEY = "lockScreenKey"
 
 
-
-private const val LOCK_SCREEN_KEY = "lockScreenKey"
-
-
-@SuppressLint("MissingPermission")
-private fun Context.showNotificationWithFullScreenIntent(
-    isLockScreen: Boolean = false,
-    title: String = "Title",
-    description: String = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    contextex : Context,
-    toneUriString: String,
-    volumeLevel:Int
+    @SuppressLint("MissingPermission")
+    private fun Context.showNotificationWithFullScreenIntent(
+        isLockScreen: Boolean = false,
+        title: String = "Title",
+        description: String = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        contextex : Context,
+        toneUriString: String,
+        volumeLevel:Int
 
 
-) {
+    ) {
 
-    //Botones de als noitificaciones:
-    val action1 = NotificationCompat.Action.Builder(
-        android.R.drawable.ic_menu_share,
-        "Desactivar",
-        desactivarAlarma(contextex)
-    ).build()
+        //Botones de als noitificaciones:
+        val action1 = NotificationCompat.Action.Builder(
+            android.R.drawable.ic_menu_share,
+            "Desactivar",
+            desactivarAlarma(contextex)
+        ).build()
 
 // Crear una acción para el segundo botón
-    val action2 = NotificationCompat.Action.Builder(
-        android.R.drawable.ic_menu_send,
-        "Aplazar",
-        aplazarAlarma(contextex)
-    ).build()
+        val action2 = NotificationCompat.Action.Builder(
+            android.R.drawable.ic_menu_send,
+            "Aplazar",
+            aplazarAlarma(contextex)
+        ).build()
 
 
 
 
 
-    val builder = NotificationCompat.Builder(this, "channelid")
-        .setSmallIcon(android.R.drawable.arrow_up_float)
-        .setContentTitle(title)
-        .setContentText(description)
-        .setPriority(NotificationCompat.PRIORITY_HIGH)
-        .setFullScreenIntent(getFullScreenIntent(isLockScreen), true)
-    if (!isLockScreen) {
-        builder.addAction(action1)
-        builder.addAction(action2)
+        val builder = NotificationCompat.Builder(this, "channelid")
+            .setSmallIcon(android.R.drawable.arrow_up_float)
+            .setContentTitle(title)
+            .setContentText(description)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setFullScreenIntent(getFullScreenIntent(isLockScreen), true)
+        if (!isLockScreen) {
+            builder.addAction(action1)
+            builder.addAction(action2)
+        }
+
+
+        contextex.let { NotificationManagerCompat.from(it) }.notify(123, builder.build())
+
+        val toneUri = toneUriString.let { Uri.parse(it) }
+        val audioManager = contextex.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+
+        if (toneUri != null) {
+            ringtone = RingtoneManager.getRingtone(contextex, toneUri)
+            audioManager.setStreamVolume(AudioManager.STREAM_ALARM, volumeLevel, 0)
+            ringtone?.play()
+        }
+
+    }
+
+    private fun desactivarAlarma(context: Context): PendingIntent {
+        val intent = Intent(context, AlarmReceiver::class.java)
+        intent.action = "TU_ACCION_DESACTIVAR"
+
+        return PendingIntent.getBroadcast(
+            context, 0, intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
+    private fun aplazarAlarma(context: Context): PendingIntent? {
+        val intent = Intent(context, AlarmReceiver::class.java)
+        intent.action = "TU_ACCION_APLAZARR"
+
+        return PendingIntent.getBroadcast(
+            context, 0, intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
     }
 
 
-    contextex.let { NotificationManagerCompat.from(it) }.notify(123, builder.build())
 
-    val toneUri = toneUriString.let { Uri.parse(it) }
-    val audioManager = contextex.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-    if (toneUri != null) {
-        ringtone = RingtoneManager.getRingtone(contextex, toneUri)
-        audioManager.setStreamVolume(AudioManager.STREAM_ALARM, volumeLevel, 0)
-        ringtone?.play()
-    }
+
+
+
+
+
 
 }
 
-private fun desactivarAlarma(context: Context): PendingIntent {
-    val intent = Intent(context, AlarmReceiver::class.java)
-    intent.action = "TU_ACCION_DESACTIVAR"
 
-    return PendingIntent.getBroadcast(
-        context, 0, intent,
-        PendingIntent.FLAG_IMMUTABLE
-    )
-}
 
- private fun aplazarAlarma(context: Context): PendingIntent? {
-     val intent = Intent(context, AlarmReceiver::class.java)
-     intent.action = "TU_ACCION_APLAZARR"
 
-     return PendingIntent.getBroadcast(
-         context, 0, intent,
-         PendingIntent.FLAG_IMMUTABLE
-     )
-}
+
+
+
+
+
+
 
 
