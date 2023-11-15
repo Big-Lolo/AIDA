@@ -139,6 +139,90 @@ class AlarmTools {
 
             return alarmList
         }
+
+        fun deactivateAlarm(context: Context, requestCode: Int) {
+            val sharedPreferences = context.getSharedPreferences("AlarmPreferences", Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+
+            // Obtener la clave asociada con el requestCode
+            val key = "alarm_$requestCode"
+
+            // Obtener el JSON almacenado para esa alarma
+            val alarmJson = sharedPreferences.getString(key, null)
+
+            // Verificar si la alarma existe
+            if (alarmJson != null) {
+                // Convertir el JSON a un objeto AlarmDetails
+                val alarmDetails = AlarmDetails.fromJson(alarmJson)
+
+                // Modificar la propiedad active
+                alarmDetails.active = false
+
+                // Convertir el objeto modificado de nuevo a JSON
+                val updatedAlarmJson = alarmDetails?.toJson()
+
+                // Guardar el JSON actualizado de nuevo en SharedPreferences
+                editor.putString(key, updatedAlarmJson)
+                editor.apply()
+            }
+        }
+
+        fun activateAlarm(context: Context, requestCode: Int) {
+            val sharedPreferences = context.getSharedPreferences("AlarmPreferences", Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+
+            // Obtener la clave asociada con el requestCode
+            val key = "alarm_$requestCode"
+
+            // Obtener el JSON almacenado para esa alarma
+            val alarmJson = sharedPreferences.getString(key, null)
+
+            // Verificar si la alarma existe
+            if (alarmJson != null) {
+                // Convertir el JSON a un objeto AlarmDetails
+                val alarmDetails = AlarmDetails.fromJson(alarmJson)
+
+                // Modificar la propiedad active
+                alarmDetails.active = true
+
+                // Convertir el objeto modificado de nuevo a JSON
+                val updatedAlarmJson = alarmDetails.toJson()
+
+                // Guardar el JSON actualizado de nuevo en SharedPreferences
+                editor.putString(key, updatedAlarmJson)
+                editor.apply()
+            }
+        }
+
+        fun deleteAlarm(context: Context, requestCode: Int) {
+            // Desactivar la alarma en el AlarmManager
+            cancelAlarm(context, requestCode)
+
+            // Eliminar la entrada de SharedPreferences
+            val sharedPreferences = context.getSharedPreferences("AlarmPreferences", Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+
+            // Obtener la clave asociada con el requestCode
+            val key = "alarm_$requestCode"
+
+            // Borrar la alarma de SharedPreferences
+            editor.remove(key)
+            editor.apply()
+        }
+
+        private fun cancelAlarm(context: Context, requestCode: Int) {
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val intent = Intent(context, AlarmReceiver::class.java)
+            val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent,
+                PendingIntent.FLAG_IMMUTABLE)
+
+            // Cancelar la alarma asociada al requestCode
+            alarmManager.cancel(pendingIntent)
+        }
+
+
+
+
     }
 
 
@@ -172,7 +256,8 @@ data class AlarmDetails(
     val dayList:Boolean,
     val diasRepetirMap: Map<String, Boolean>,
     val hour: Int,
-    val minute: Int
+    val minute: Int,
+    var active: Boolean = true
     // Otros detalles de la alarma que necesites
 ) {
     fun toJson(): String {

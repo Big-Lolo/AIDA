@@ -11,12 +11,29 @@ import com.example.aida.utils.AlarmDetails
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class HorizontalAdapter(private val context: Context, private val dataList: List<AlarmDetails>) :
+
+interface OnItemClickListener {
+    fun onItemClick(position: Int)
+}
+
+class HorizontalAdapter(private val context: Context, private val dataList: List<AlarmDetails>,
+                        private val itemClickListener: OnItemClickListener) :
+
     RecyclerView.Adapter<HorizontalAdapter.ViewHolder>() {
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+
+
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        init {
+            itemView.setOnClickListener {
+                itemClickListener.onItemClick(adapterPosition)
+            }
+        }
         val textViewHora: TextView = itemView.findViewById(R.id.Hora)
         val textViewFecha: TextView = itemView.findViewById(R.id.fechass)
+
+
 
     }
 

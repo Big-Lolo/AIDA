@@ -24,7 +24,7 @@ import com.example.aida.utils.AlarmTools.Companion.setAlarm
 import java.sql.Date
 import java.text.SimpleDateFormat
 
-class AlarmFragment : Fragment() {
+class AlarmFragment() : Fragment() {
     private var fechaSeleccionada: Date? = null
     private var dateString:String? = null
     private var selectedAlarmTone: Uri? = null

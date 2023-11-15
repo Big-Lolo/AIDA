@@ -11,11 +11,11 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.aida.utils.AlarmDetails
 import com.example.aida.utils.AlarmTools.Companion.getAllAlarms
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -28,7 +28,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [Home.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Home : Fragment() {
+class Home : Fragment(), OnItemClickListener  {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -55,7 +55,7 @@ class Home : Fragment() {
         recyclerViewAlarms.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
         val dataList = getAllAlarms(requireContext())
-        val adapter = HorizontalAdapter(requireContext(), dataList)
+        val adapter = HorizontalAdapter(requireContext(), dataList, this)
         recyclerViewAlarms.adapter = adapter
 
 
@@ -94,7 +94,6 @@ class Home : Fragment() {
         wasouskiButton.setOnClickListener {
 
             Log.d("Home tyagg", "Nuevo fragmento")
-            val nuevoFragmento = AlarmFragment()
             listener?.onAlarmButtonClicked()
 
             /* Reemplazar el fragmento actual con el nuevo fragmento
@@ -112,6 +111,7 @@ class Home : Fragment() {
     }
     interface OnHomeInteractionListener {
         fun onAlarmButtonClicked()
+        fun onClockAlarmClicked(data: AlarmDetails)
     }
     companion object {
         /**
@@ -145,5 +145,12 @@ class Home : Fragment() {
     override fun onDetach() {
         super.onDetach()
         listener = null
+    }
+
+    override fun onItemClick(position: Int) {
+        // Aquí puedes abrir el fragmento con la información deseada
+        val dataList = getAllAlarms(requireContext())
+        val data = dataList[position]
+        listener?.onClockAlarmClicked(data)
     }
 }

@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
 import com.example.aida.databinding.ActivityMainBinding
+import com.example.aida.utils.AlarmDetails
 
 
 class MainActivity : AppCompatActivity(), Home.OnHomeInteractionListener {
@@ -81,11 +82,11 @@ class MainActivity : AppCompatActivity(), Home.OnHomeInteractionListener {
         replaceFragment(AlarmFragment())
     }
 
-    companion object {
-        fun replaceFragmentt(fragment: Fragment, activity: MainActivity) {
-            activity.replaceFragment(fragment)
-        }
+    override fun onClockAlarmClicked(data: AlarmDetails) {
+        replaceFragment(AlarmEditFragment(data))
     }
+
+
 
 
 }
