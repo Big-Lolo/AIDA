@@ -40,13 +40,23 @@ class AlarmTools {
                      diasRepetirMap: Map<String, Boolean>,
                      dayList:Boolean,
                      vibrate:Boolean,
-                     aplazarTime:Int
+                     aplazarTime:Int,
+                     edit: Boolean = false,
+                     identifier : Int = 0
         ) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
             //new
             val intent = Intent(context, AlarmReceiver::class.java)
-            val requestCode = generateUniqueAlarmId(context)  //ID UNICA
+            val requestCode = if(edit){
+                identifier
+            }else{
+                generateUniqueAlarmId(context)
+            } //ID UNICA
+
+
+
+
             val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 

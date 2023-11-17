@@ -2,6 +2,7 @@ package com.example.aida
 
 import android.app.Activity
 import android.app.DatePickerDialog
+import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
 import android.media.RingtoneManager
@@ -16,6 +17,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.TimePicker
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
@@ -24,7 +26,7 @@ import com.example.aida.utils.AlarmTools.Companion.setAlarm
 import java.sql.Date
 import java.text.SimpleDateFormat
 
-class AlarmFragment() : Fragment() {
+class AlarmFragment() : Fragment(), OnItemClickListener {
     private var fechaSeleccionada: Date? = null
     private var dateString:String? = null
     private var selectedAlarmTone: Uri? = null
@@ -38,6 +40,7 @@ class AlarmFragment() : Fragment() {
         "Domingo" to false
     )
     private var dayList : Boolean = false
+    private var listener: Home.OnHomeInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,14 +53,22 @@ class AlarmFragment() : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
+        if (savedInstanceState != null) {
+            var miDato = savedInstanceState.getString("miDato", "")
+            Log.d("DATO_RECUPERADO", "El dato recuperado es: $miDato")
+        }
         // Inflar el diseño del fragmento (por ejemplo, un fondo blanco)
         return inflater.inflate(R.layout.alarm_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                listener?.onReturn2Home()
+                remove()
+            }
+        })
 
 
 
@@ -279,11 +290,14 @@ class AlarmFragment() : Fragment() {
     }
     private fun selectAlarmTone(view: View) {
         val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
-        // Configurar el intent según sea necesario, por ejemplo:
-        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
-        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Seleccionar alarma")
-
-        resultLauncher.launch(intent)
+        //Este boton lo que hará sera el launch de otro fragmento.
+        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        var AlarmCache = //diccionario de datos (nombre, hora, fecha, vibracion, musica si ya estaba configurada....
+        editor.putString("AlarmConfig", AlarmCache) //Esto lo que hará será guardar los datos
+        //ya hay escritos de manera temporal para luego recuperarlos.
+        editor.apply()
+        listener?.openMusicSource()
     }
 
     private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -300,5 +314,16 @@ class AlarmFragment() : Fragment() {
         }
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is Home.OnHomeInteractionListener) {
+            listener = context
+        } else {
+            throw RuntimeException("$context must implement OnHomeInteractionListener")
+        }
+    }
 
+    override fun onItemClick(position: Int) {
+        Log.d("ALFANUM", "MENSAJE DE PRUEBA PINORRO")
+    }
 }

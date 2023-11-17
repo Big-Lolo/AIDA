@@ -112,6 +112,11 @@ class Home : Fragment(), OnItemClickListener  {
     interface OnHomeInteractionListener {
         fun onAlarmButtonClicked()
         fun onClockAlarmClicked(data: AlarmDetails)
+
+        fun onReturn2Home()
+        fun openMusicSource()
+
+
     }
     companion object {
         /**

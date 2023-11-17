@@ -86,6 +86,13 @@ class MainActivity : AppCompatActivity(), Home.OnHomeInteractionListener {
         replaceFragment(AlarmEditFragment(data))
     }
 
+    override fun onReturn2Home() {
+        replaceFragment(Home())
+    }
+
+    override fun openMusicSource() {
+        replaceFragment(toneSelector())
+    }
 
 
 
