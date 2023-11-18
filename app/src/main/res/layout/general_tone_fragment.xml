@@ -5,69 +5,251 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.SwitchCompat
+    <LinearLayout
         android:id="@+id/switch1"
-        android:layout_width="405dp"
-        android:layout_height="43dp"
-        android:text="Activado"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_circle_left_arrow"
+        android:backgroundTint="#D3D0D0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.064" />
+        app:layout_constraintVertical_bias="0.096">
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="405dp"
-        android:layout_height="144dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switch1"
-        app:layout_constraintVertical_bias="0.0"
-        android:background="@drawable/receive_round_box">
-
-        <CheckBox
-            android:id="@+id/IAinformativa"
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchsoon1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:button="@null"
-            android:drawableRight="@drawable/checkbox_background"
-            android:text="Alarma Informativa \n Lee en alto la hora actual, el tiempo, noticias y todo con musica de fondo. "
-            android:clickable="true"
-            />
-
-        <CheckBox
-            android:id="@+id/spotify"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Spotify \n Despierta con tus canciones favoritas"
-            android:button="@null"
-            android:drawableRight="@drawable/checkbox_background"
-            android:clickable="true"/>
-
-        <CheckBox
-            android:id="@+id/melodia"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="🎵Melodia"
-            android:button="@null"
-            android:drawableRight="@drawable/checkbox_background"
-            android:clickable="true"/>
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="20dp"
+            android:text="Activado"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.114"
+            android:checked="true"/>
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="398dp"
+        android:id="@+id/linearLayout"
+        android:layout_width="404dp"
+        android:layout_height="186dp"
+        android:background="@drawable/receive_round_box"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.428"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switch1"
+        app:layout_constraintVertical_bias="0.037">
+
+        <!-- LinearLayout horizontal para elementos internos -->
+
+
+        <LinearLayout
+            android:id="@+id/innerLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="59dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.004"
+            android:layout_marginRight="0dp"
+            android:layout_marginLeft="10dp"
+            android:clickable="true">
+
+            <!-- Imagen cuadrada pequeña -->
+            <ImageView
+                android:id="@+id/smallSquareImage"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/logo" />
+
+            <!-- Cuadro de texto con título y subtítulo -->
+            <LinearLayout
+                android:id="@+id/textBoxLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/titleTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Informativo IA"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/subtitleTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="31dp"
+                    android:background="@drawable/linea_horizontal_superior"
+                    android:text="Lee en alto la hora actual, el tiempo y las noticias con musica de fondo"
+                    android:textColor="@color/black"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <!-- Cuadro de otra imagen -->
+            <ImageView
+                android:id="@+id/anotherImage"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginTop="15dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/imageviewcheck"
+                android:visibility="invisible" />
+        </LinearLayout>
+        <!-- SEGUNDO ELEMENTO -->
+
+        <!-- tercer elemento -->
+
+        <LinearLayout
+            android:id="@+id/innerLinearLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="59dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/innerLinearLayout"
+            app:layout_constraintVertical_bias="0.0"
+            android:layout_marginRight="0dp"
+            android:layout_marginLeft="10dp"
+            android:clickable="true">
+
+            <!-- Imagen cuadrada pequeña -->
+            <ImageView
+                android:id="@+id/smallSquareImage2"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/spotify_icon" />
+
+            <!-- Cuadro de texto con título y subtítulo -->
+            <LinearLayout
+                android:id="@+id/textBoxLayout2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/titleTextView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Spotify"
+                    android:textColor="#000000"
+                    android:textSize="16sp"
+                    />
+
+                <TextView
+                    android:id="@+id/subtitleTextView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="29dp"
+                    android:text="Despierta con tus canciones favoridas de Spotify"
+                    android:textColor="@color/black"
+                    android:textSize="11sp"
+                    android:background="@drawable/linea_horizontal_superior"/>
+            </LinearLayout>
+
+            <!-- Cuadro de otra imagen -->
+            <ImageView
+                android:id="@+id/anotherImage2"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginTop="15dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/imageviewcheck"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/innerLinearLayout3"
+            android:layout_width="match_parent"
+            android:layout_height="59dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/innerLinearLayout2"
+            app:layout_constraintVertical_bias="0.0"
+            android:layout_marginRight="0dp"
+            android:layout_marginLeft="10dp"
+            android:clickable="true">
+
+            <!-- Imagen cuadrada pequeña -->
+            <ImageView
+                android:id="@+id/smallSquareImage3"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/music_icon" />
+
+            <!-- Cuadro de texto con título y subtítulo -->
+            <LinearLayout
+                android:id="@+id/textBoxLayout3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/titleTextView3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Melodía"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/subtitleTextView3"
+                    android:layout_width="match_parent"
+                    android:layout_height="29dp"
+                    android:text="Melodia default"
+                    android:textColor="@color/black"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <!-- Cuadro de otra imagen -->
+            <ImageView
+                android:id="@+id/anotherImage3"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginTop="15dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/imageviewcheck"
+                android:visibility="visible" />
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="43dp"
         app:layout_constraintBottom_toTopOf="@+id/switch1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.461"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintVertical_bias="0.346"
+        tools:layout_editor_absoluteX="0dp"
+        >
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button3"
@@ -75,9 +257,7 @@
             android:layout_height="28dp"
             android:background="@android:drawable/ic_lock_silent_mode_off"
             android:drawableBottom="@android:drawable/ic_menu_close_clear_cancel"
-
             android:drawableTint="#000000"
-            android:text=""
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -86,7 +266,7 @@
             android:id="@+id/textView4"
             android:layout_width="114dp"
             android:layout_height="29dp"
-            android:text="TextView"
+            android:text="Sonido de alarma"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -95,24 +275,24 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="409dp"
-        android:layout_height="66dp"
+        android:layout_width="410dp"
+        android:layout_height="72dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintVertical_bias="0.95">
 
         <SeekBar
             android:id="@+id/seekBar"
-            android:layout_width="375dp"
-            android:layout_height="33dp"
+            android:layout_width="355dp"
+            android:layout_height="62dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.921"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.508" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button4"
@@ -122,12 +302,11 @@
             android:backgroundTint="@color/black"
             android:clickable="false"
             android:text=""
-            android:textSize="10dp"
+            android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/seekBar"
-            app:layout_constraintHorizontal_bias="0.02"
+            app:layout_constraintHorizontal_bias="0.416"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

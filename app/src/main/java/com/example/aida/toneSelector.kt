@@ -6,11 +6,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.example.aida.AlarmCache.Companion.fromJson
+import com.google.gson.Gson
 
 class toneSelector(): Fragment(), OnItemClickListener {
     private var listener: Home.OnHomeInteractionListener? = null
+    private var typeSong:String? = null
+    private var VolumenLevel: Int = 0
+    private var activoSonido: Boolean = true
 
     interface OnHomeInteractionListener {
 
@@ -39,10 +48,104 @@ class toneSelector(): Fragment(), OnItemClickListener {
         super.onViewCreated(view, savedInstanceState)
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                listener?.onAlarmButtonClicked()
+                listener?.onAlarmButtonClicked(submenu = true)
                 remove()
             }
         })
+
+        val informativo = view.findViewById<LinearLayout>(R.id.innerLinearLayout)
+        val spotify = view.findViewById<LinearLayout>(R.id.innerLinearLayout2)
+        val melodia = view.findViewById<LinearLayout>(R.id.innerLinearLayout3)
+        val infCheck = view.findViewById<ImageView>(R.id.anotherImage)
+        val spotCheck = view.findViewById<ImageView>(R.id.anotherImage2)
+        val melCheck = view.findViewById<ImageView>(R.id.anotherImage3)
+        val infSubtitle = view.findViewById<TextView>(R.id.subtitleTextView)
+        val spotSubtitle = view.findViewById<TextView>(R.id.subtitleTextView2)
+        val melSubtitle = view.findViewById<TextView>(R.id.subtitleTextView3)
+        val colorBlack = ContextCompat.getColor(requireContext(), R.color.black)
+        val colorPrimary = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
+
+
+
+        informativo.setOnClickListener {
+            infCheck.visibility = View.VISIBLE
+            spotCheck.visibility = View.INVISIBLE
+            melCheck.visibility = View.INVISIBLE
+
+            infSubtitle.setTextColor(colorPrimary)
+            spotSubtitle.setTextColor(colorBlack)
+            melSubtitle.setTextColor(colorBlack)
+
+            typeSong = "informativo"
+            openMenuButton("informativo")
+
+        }
+
+        spotify.setOnClickListener {
+            infCheck.visibility = View.INVISIBLE
+            spotCheck.visibility = View.VISIBLE
+            melCheck.visibility = View.INVISIBLE
+
+            infSubtitle.setTextColor(colorBlack)
+            spotSubtitle.setTextColor(colorPrimary)
+            melSubtitle.setTextColor(colorBlack)
+
+            typeSong = "spotify"
+            openMenuButton("spotify")
+
+        }
+
+        melodia.setOnClickListener {
+            infCheck.visibility = View.INVISIBLE
+            spotCheck.visibility = View.INVISIBLE
+            melCheck.visibility = View.VISIBLE
+
+            infSubtitle.setTextColor(colorBlack)
+            spotSubtitle.setTextColor(colorBlack)
+            melSubtitle.setTextColor(colorPrimary)
+
+            typeSong = "melodia"
+            openMenuButton("melodia")
+        }
+
+    }
+
+    fun openMenuButton(category: String ){
+        if(category == "spotify" || category == "informativo" || category == "melodia"){
+
+            val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
+            val alarmConfigString = sharedPreferences.getString("AlarmConfig", null)
+
+            if (alarmConfigString != null) {
+                // Convertir el JSON a un objeto (asumiendo que sea JSON)
+                val alarmConfig = fromJson(alarmConfigString, AlarmCache::class.java)
+
+                // Actualizar los valores en el objeto según sea necesario
+
+                alarmConfig.volumeLevel = if(activoSonido) VolumenLevel else 0
+                alarmConfig.typeofalarm = typeSong
+                alarmConfig.volumeStatus = activoSonido
+
+
+                // Convertir el objeto actualizado a JSON
+                val updatedAlarmConfigString = Gson().toJson(alarmConfig)
+
+                // Guardar el valor actualizado de "AlarmConfig" en SharedPreferences
+                val editor = sharedPreferences.edit()
+                editor.putString("AlarmConfig", updatedAlarmConfigString)
+                editor.apply()
+
+
+                if(category == "spotify" ){
+                    //TODO openSpotifySelector()
+                }else if (category == "informativo"){
+
+                }else if (category == "melodia"){
+                    listener?.openMelodySelector()
+                }
+            }
+
+        }
     }
 
     override fun onAttach(context: Context) {

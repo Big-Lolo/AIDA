@@ -78,8 +78,8 @@ class MainActivity : AppCompatActivity(), Home.OnHomeInteractionListener {
             notificationManager.createNotificationChannel(channel)
         }
     }
-    override fun onAlarmButtonClicked() {
-        replaceFragment(AlarmFragment())
+    override fun onAlarmButtonClicked(submenu: Boolean) {
+        replaceFragment(AlarmFragment(submenu))
     }
 
     override fun onClockAlarmClicked(data: AlarmDetails) {
@@ -92,6 +92,10 @@ class MainActivity : AppCompatActivity(), Home.OnHomeInteractionListener {
 
     override fun openMusicSource() {
         replaceFragment(toneSelector())
+    }
+
+    override fun openMelodySelector(){
+        replaceFragment(MelodySelectorIt())
     }
 
 

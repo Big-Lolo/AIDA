@@ -110,11 +110,12 @@ class Home : Fragment(), OnItemClickListener  {
         return view
     }
     interface OnHomeInteractionListener {
-        fun onAlarmButtonClicked()
+        fun onAlarmButtonClicked(submenu: Boolean = false)
         fun onClockAlarmClicked(data: AlarmDetails)
 
         fun onReturn2Home()
         fun openMusicSource()
+        fun openMelodySelector()
 
 
     }

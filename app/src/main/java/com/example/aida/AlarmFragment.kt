@@ -23,10 +23,11 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.aida.utils.AlarmTools.Companion.setAlarm
+import com.google.gson.Gson
 import java.sql.Date
 import java.text.SimpleDateFormat
 
-class AlarmFragment() : Fragment(), OnItemClickListener {
+class AlarmFragment(private val submenu: Boolean = false) : Fragment(), OnItemClickListener {
     private var fechaSeleccionada: Date? = null
     private var dateString:String? = null
     private var selectedAlarmTone: Uri? = null
@@ -41,11 +42,18 @@ class AlarmFragment() : Fragment(), OnItemClickListener {
     )
     private var dayList : Boolean = false
     private var listener: Home.OnHomeInteractionListener? = null
+    private var yearCache: Int = 0
+    private var monthCache: Int = 0
+    private var dayCache: Int = 0
+    private var typeofalarm: String? = null
+    private var uriAlarm: Uri? = null
+    private var volumeAlarma: Int = 50
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("AlarmFragment", "onCreate")
-        // Resto del código
+
     }
 
     override fun onCreateView(
@@ -53,6 +61,7 @@ class AlarmFragment() : Fragment(), OnItemClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         if (savedInstanceState != null) {
             var miDato = savedInstanceState.getString("miDato", "")
             Log.d("DATO_RECUPERADO", "El dato recuperado es: $miDato")
@@ -63,6 +72,99 @@ class AlarmFragment() : Fragment(), OnItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+        //Recuperar cache y actualizar datos previos.
+        if(submenu){
+            //Obtener cache si estaba previamente en submenu
+            val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
+            val alarmConfigJson = sharedPreferences.getString("AlarmConfig", null)
+            val alarmCacheInf = alarmConfigJson?.let {
+                AlarmCache.fromJson(
+                    it,
+                    AlarmCache::class.java
+                )
+            }
+
+            //Asignar información
+            if (alarmCacheInf != null) {
+                fechaSeleccionada = alarmCacheInf.fechaSeleccionada
+            }
+            if (alarmCacheInf != null) {
+                dateString = alarmCacheInf.dateString
+            }
+            if (alarmCacheInf != null) {
+                diasSemanaMap = alarmCacheInf.diasSemanaMap as MutableMap<String, Boolean>
+            }
+            val nombre = alarmCacheInf?.alarmName
+            val hours = alarmCacheInf?.hour
+            val minutes = alarmCacheInf?.minute
+            dayCache = alarmCacheInf?.day!!
+            monthCache = alarmCacheInf?.month!!
+            yearCache = alarmCacheInf?.year!!
+            dayList = alarmCacheInf.dayList
+            typeofalarm = alarmCacheInf.typeofalarm
+            uriAlarm = alarmCacheInf.toneUri as Uri?
+            volumeAlarma = alarmCacheInf.volumeLevel
+            val vibrate = alarmCacheInf?.vibrate
+            val campoNombre =  view.findViewById<EditText>(R.id.eventss)
+            campoNombre.setText(nombre)
+            val timePicker = view.findViewById<TimePicker>(R.id.datePicker1) //
+            timePicker.setIs24HourView(true)
+            val hour: Int? = hours
+            val minute: Int? = minutes
+            if (Build.VERSION.SDK_INT >= 23) {
+                if (hour != null) {
+                    timePicker.hour = hour
+                }
+                if (minute != null) {
+                    timePicker.minute = minute
+                }
+            }
+            val switchVibracion= view.findViewById<SwitchCompat>(R.id.vibrateSwitch)
+            if (vibrate != null) {
+                switchVibracion.isChecked = vibrate
+            }
+            if(dayList) {
+                val diasSemanaIds = intArrayOf(
+                    R.id.lunes,
+                    R.id.martes,
+                    R.id.miercoles,
+                    R.id.jueves,
+                    R.id.viernes,
+                    R.id.sabado,
+                    R.id.domingo
+                )
+                for ((index, entry) in diasSemanaMap.entries.withIndex()) {
+                    val dia = entry.key
+                    val estaActivo = entry.value
+                        Log.d("EntryValue", "La entry es: $dia y el valor es $estaActivo")
+                    if (estaActivo) {
+                        val idTextView = diasSemanaIds[index]
+
+                        // Cambiar el color del TextView asociado.
+                        val textView = view.findViewById<TextView>(idTextView)
+                        textView.setTextColor(resources.getColor(R.color.colorPrimary))
+                    }
+                }
+            }
+            val text = view.findViewById<TextView>(R.id.textView3111)
+            text.text = dateString
+
+            //hay que guardar los datos del tono de llamada ("URI")
+            val sharedPreferencess = requireActivity().getPreferences(Context.MODE_PRIVATE)
+            val editor = sharedPreferencess.edit()
+            editor.remove("AlarmConfig") //Eliminamos el AlarmConfig tras volver al lobby y haber cargado toda la informacion requerida.
+            editor.apply()
+        }
+
+
+
+
+
+
+
+
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 listener?.onReturn2Home()
@@ -107,6 +209,7 @@ class AlarmFragment() : Fragment(), OnItemClickListener {
         }
 
         fun showDatePickerDialog(vieww: View) {
+            val calendarHoy = Calendar.getInstance()
             val datePicker = context?.let {
                 DatePickerDialog(
                     it,
@@ -118,7 +221,6 @@ class AlarmFragment() : Fragment(), OnItemClickListener {
                         val formattedDate = simpleDateFormat.format(fechaSeleccionada)
 
                         val text = vieww.findViewById<TextView>(R.id.textView3111)
-                        val calendarHoy = Calendar.getInstance()
                         dayList = false
                         restartListDay()
                         if (selectedCalendar.get(Calendar.YEAR) == calendarHoy.get(Calendar.YEAR) &&
@@ -148,12 +250,11 @@ class AlarmFragment() : Fragment(), OnItemClickListener {
 
                     },
                     // Configura la fecha actual como fecha predeterminada
-                    Calendar.getInstance().get(Calendar.YEAR),
-                    Calendar.getInstance().get(Calendar.MONTH),
-                    Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+                    if (submenu) yearCache else calendarHoy.get(Calendar.YEAR),
+                    if (submenu) (monthCache - 1) else calendarHoy.get(Calendar.MONTH),
+                    if (submenu) dayCache else calendarHoy.get(Calendar.DAY_OF_MONTH)
                 )
             }
-            val calendarHoy = Calendar.getInstance()
             datePicker?.datePicker?.minDate = calendarHoy.timeInMillis
             datePicker?.show()
         }
@@ -225,13 +326,10 @@ class AlarmFragment() : Fragment(), OnItemClickListener {
             val switchVibration = view.findViewById<SwitchCompat>(R.id.vibrateSwitch)
             var VibrationState = switchVibration.isChecked
 
-            val switchTone = view.findViewById<SwitchCompat>(R.id.soundSwitch)
-            var ToneState = switchTone.isChecked
-
             val nameAlarm = view.findViewById<EditText>(R.id.eventss)
             var nombre = nameAlarm.text.toString()
 
-            var timeAplazamiento = 5 //5 minutos de aplazamiento default. Ya se hará el selector
+            var timeAplazamiento = 5
 
 
             val calendar = Calendar.getInstance()
@@ -258,20 +356,8 @@ class AlarmFragment() : Fragment(), OnItemClickListener {
 
 
         cancelButton.setOnClickListener {
-            val nuevoFragmento = Home()
-
-            // Reemplazar el fragmento actual con el nuevo fragmento
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.phatherContainerB, nuevoFragmento)
-                .addToBackStack(null) // Agregar a la pila de retroceso
-                .commit()
-
-            // Eliminar el fragmento actual
-            requireActivity().supportFragmentManager.beginTransaction()
-                .remove(this)
-                .commit()        }
-
-
+            listener?.onReturn2Home()
+        }
 
 
     }
@@ -291,10 +377,46 @@ class AlarmFragment() : Fragment(), OnItemClickListener {
     private fun selectAlarmTone(view: View) {
         val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
         //Este boton lo que hará sera el launch de otro fragmento.
+        val calendar = Calendar.getInstance()
+        val currentDate = calendar.time
+        if (fechaSeleccionada == null) {
+            calendar.time = currentDate
+        }else{
+            calendar.time = fechaSeleccionada
+        }
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH) + 1
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val timePicker = view.findViewById<TimePicker>(R.id.datePicker1) // Reemplaza R.id.timePicker con tu ID real
+        val hour: Int = timePicker.hour
+        val minute: Int = timePicker.minute
+        val switchVibration = view.findViewById<SwitchCompat>(R.id.vibrateSwitch)
+        var vibrate = switchVibration.isChecked
+        val nombre = view.findViewById<EditText>(R.id.eventss)
+
         val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        var AlarmCache = //diccionario de datos (nombre, hora, fecha, vibracion, musica si ya estaba configurada....
-        editor.putString("AlarmConfig", AlarmCache) //Esto lo que hará será guardar los datos
+        var AlarmCacheInf = AlarmCache(
+            sesion = "AlarmFragment",
+            month = month,
+            day = day,
+            year = year,
+            hour = hour,
+            minute = minute,
+            alarmName = nombre.text.toString(),
+            volumeLevel = 50,
+            toneUri = null,
+            diasSemanaMap = diasSemanaMap,
+            dayList = dayList,
+            vibrate = vibrate,
+            aplazamiento = 5,
+            fechaSeleccionada = fechaSeleccionada,
+            dateString = dateString,
+            typeofalarm = typeofalarm)
+
+
+        editor.putString("AlarmConfig", AlarmCacheInf.toJson()) //Esto lo que hará será guardar los datos
         //ya hay escritos de manera temporal para luego recuperarlos.
         editor.apply()
         listener?.openMusicSource()
@@ -325,5 +447,42 @@ class AlarmFragment() : Fragment(), OnItemClickListener {
 
     override fun onItemClick(position: Int) {
         Log.d("ALFANUM", "MENSAJE DE PRUEBA PINORRO")
+    }
+}
+
+
+
+data class AlarmCache(
+    var sesion:String,
+    var alarmName: String,
+    var toneUri: Any? = null,
+    var toneState:Boolean = true,
+    var volumeLevel: Int,
+    var vibrate:Boolean,
+    var aplazamiento: Int,
+    var year: Int,
+    var month: Int,
+    var day: Int,
+    var dayList:Boolean,
+    var diasSemanaMap: Map<String, Boolean>,
+    var hour: Int,
+    var minute: Int,
+    var active: Boolean = true,
+    var fechaSeleccionada:Date? = null,
+    var dateString: String? = null,
+    var typeofalarm: String? = null,
+    var volumeStatus:Boolean? = true
+) {
+    fun toJson(): String {
+        return Gson().toJson(this)
+    }
+
+    companion object {
+        fun fromJson(json: String, java: Any): AlarmCache {
+            return Gson().fromJson(json, AlarmCache::class.java)
+        }
+        fun toJson(): String {
+            return Gson().toJson(this)
+        }
     }
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Línea horizontal en la parte superior -->
+    <item android:top="1dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/darker_gray"/>
+            <size android:height="1dp"/>
+        </shape>
+    </item>
+    <!-- Resto del fondo del TextView (puedes ajustar esto según tus necesidades) -->
+    <item android:bottom="1dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/white"/>
+        </shape>
+    </item>
+</layer-list>
