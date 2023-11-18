@@ -114,7 +114,7 @@ class Home : Fragment(), OnItemClickListener  {
         fun onClockAlarmClicked(data: AlarmDetails)
 
         fun onReturn2Home()
-        fun openMusicSource()
+        fun openMusicSource(submenu: Boolean = false)
         fun openMelodySelector()
 
 

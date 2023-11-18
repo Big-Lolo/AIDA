@@ -63,7 +63,6 @@ class AlarmEditFragment(private val datas: AlarmDetails): Fragment(), OnItemClic
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("AlarmFragment", "onCreate")
         // Resto del código
     }
 

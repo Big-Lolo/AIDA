@@ -104,7 +104,7 @@ class AlarmFragment(private val submenu: Boolean = false) : Fragment(), OnItemCl
             yearCache = alarmCacheInf?.year!!
             dayList = alarmCacheInf.dayList
             typeofalarm = alarmCacheInf.typeofalarm
-            uriAlarm = alarmCacheInf.toneUri as Uri?
+            uriAlarm = alarmCacheInf.toneUri
             volumeAlarma = alarmCacheInf.volumeLevel
             val vibrate = alarmCacheInf?.vibrate
             val campoNombre =  view.findViewById<EditText>(R.id.eventss)
@@ -138,7 +138,6 @@ class AlarmFragment(private val submenu: Boolean = false) : Fragment(), OnItemCl
                 for ((index, entry) in diasSemanaMap.entries.withIndex()) {
                     val dia = entry.key
                     val estaActivo = entry.value
-                        Log.d("EntryValue", "La entry es: $dia y el valor es $estaActivo")
                     if (estaActivo) {
                         val idTextView = diasSemanaIds[index]
 
@@ -350,7 +349,7 @@ class AlarmFragment(private val submenu: Boolean = false) : Fragment(), OnItemCl
                 dayList = false
             }
 
-            selectedAlarmTone?.let { it1 -> setAlarm(requireContext(), year, month, day, hour, minute, nombre, volumenLevel = 50, toneUri = it1, diasRepetirMap = diasSemanaMap, dayList = dayList, vibrate = VibrationState, aplazarTime = timeAplazamiento) }
+            selectedAlarmTone?.let { it1 -> uriAlarm?.let { it2 -> setAlarm(requireContext(), year, month, day, hour, minute, nombre, volumenLevel = volumeAlarma, toneUri = it2, diasRepetirMap = diasSemanaMap, dayList = dayList, vibrate = VibrationState, aplazarTime = timeAplazamiento) } }
 
         }
 
@@ -455,7 +454,7 @@ class AlarmFragment(private val submenu: Boolean = false) : Fragment(), OnItemCl
 data class AlarmCache(
     var sesion:String,
     var alarmName: String,
-    var toneUri: Any? = null,
+    var toneUri: Uri? = null,
     var toneState:Boolean = true,
     var volumeLevel: Int,
     var vibrate:Boolean,

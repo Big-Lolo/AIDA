@@ -90,8 +90,8 @@ class MainActivity : AppCompatActivity(), Home.OnHomeInteractionListener {
         replaceFragment(Home())
     }
 
-    override fun openMusicSource() {
-        replaceFragment(toneSelector())
+    override fun openMusicSource(submenu: Boolean) {
+        replaceFragment(toneSelector(submenu))
     }
 
     override fun openMelodySelector(){

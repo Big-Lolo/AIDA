@@ -2,7 +2,9 @@ package com.example.aida
 
 import android.content.Context
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,11 +14,13 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import com.google.gson.Gson
 
 class MelodySelectorIt(): Fragment(), OnItemClickListener {
     private var listener: Home.OnHomeInteractionListener? = null
     private lateinit var listView: ListView
-
+    private var urisong: Uri? = null
+    private var songName: String = "Melodia Seleccionada: default"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -45,7 +49,8 @@ class MelodySelectorIt(): Fragment(), OnItemClickListener {
         listView.setOnItemClickListener { _, _, position, _ ->
             val selectedMelody = adapter.getItem(position)
             Log.d("SELECTED_SONG", "Se seleccionó $selectedMelody")
-            textSelect.text = "Melodia Seleccionada: $selectedMelody"
+            songName = "Melodia Seleccionada: $selectedMelody"
+            textSelect.text = songName
             // Realizar acciones con el tono de alarma seleccionado
         }
 
@@ -58,7 +63,32 @@ class MelodySelectorIt(): Fragment(), OnItemClickListener {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    listener?.onAlarmButtonClicked(submenu = true)
+
+                    val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
+                    val alarmConfigString = sharedPreferences.getString("AlarmConfig", null)
+
+                    if (alarmConfigString != null) {
+                        // Convertir el JSON a un objeto (asumiendo que sea JSON)
+                        val alarmConfig =
+                            AlarmCache.fromJson(alarmConfigString, AlarmCache::class.java)
+
+                        // Actualizar los valores en el objeto según sea necesario
+
+
+                        alarmConfig.toneUri = getUriFromSongName(songName)
+
+
+                        // Convertir el objeto actualizado a JSON
+                        val updatedAlarmConfigString = Gson().toJson(alarmConfig)
+
+                        // Guardar el valor actualizado de "AlarmConfig" en SharedPreferences
+                        val editor = sharedPreferences.edit()
+                        editor.putString("AlarmConfig", updatedAlarmConfigString)
+                        editor.apply()
+                    }
+
+
+                    listener?.openMusicSource(submenu = true)
                     remove()
                 }
             })
@@ -91,5 +121,34 @@ class MelodySelectorIt(): Fragment(), OnItemClickListener {
         cursor.close()
 
         return alarmTones
+    }
+
+    private fun getUriFromSongName(songName: String): Uri? {
+        val projection = arrayOf(
+            MediaStore.Audio.Media._ID,
+            MediaStore.Audio.Media.DATA,
+            MediaStore.Audio.Media.DISPLAY_NAME
+        )
+
+        val selection = "${MediaStore.Audio.Media.DISPLAY_NAME} = ?"
+        val selectionArgs = arrayOf(songName)
+
+        val cursor = requireContext().contentResolver.query(
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+            projection,
+            selection,
+            selectionArgs,
+            null
+        )
+
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val uriIndex = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
+                val uriString = it.getString(uriIndex)
+                return Uri.parse(uriString)
+            }
+        }
+
+        return null
     }
 }

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
@@ -15,7 +16,7 @@ import androidx.fragment.app.Fragment
 import com.example.aida.AlarmCache.Companion.fromJson
 import com.google.gson.Gson
 
-class toneSelector(): Fragment(), OnItemClickListener {
+class toneSelector(var submenu:Boolean = false): Fragment(), OnItemClickListener {
     private var listener: Home.OnHomeInteractionListener? = null
     private var typeSong:String? = null
     private var VolumenLevel: Int = 0
@@ -46,6 +47,10 @@ class toneSelector(): Fragment(), OnItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if(submenu){
+            //TODO: Cambiar el "Melodia default" por el nombre del que seria la melodia seleccionada
+
+        }
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 listener?.onAlarmButtonClicked(submenu = true)
@@ -108,6 +113,24 @@ class toneSelector(): Fragment(), OnItemClickListener {
             openMenuButton("melodia")
         }
 
+        val seekBarVolume = view.findViewById<SeekBar>(R.id.seekBar)
+
+        seekBarVolume.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                val volumeValue = progress
+                VolumenLevel = volumeValue
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                //TODO: USAR ESTO PARA REPRODUCIR EL TONO MIENTRAS SE MANTIENE PULSADO.
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                // Este método se llama cuando se deja de tocar la SeekBar
+            }
+        })
+
+
     }
 
     fun openMenuButton(category: String ){
@@ -119,6 +142,7 @@ class toneSelector(): Fragment(), OnItemClickListener {
             if (alarmConfigString != null) {
                 // Convertir el JSON a un objeto (asumiendo que sea JSON)
                 val alarmConfig = fromJson(alarmConfigString, AlarmCache::class.java)
+
 
                 // Actualizar los valores en el objeto según sea necesario
 
