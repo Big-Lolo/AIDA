@@ -104,7 +104,7 @@ class AlarmFragment(private val submenu: Boolean = false) : Fragment(), OnItemCl
             yearCache = alarmCacheInf?.year!!
             dayList = alarmCacheInf.dayList
             typeofalarm = alarmCacheInf.typeofalarm
-            uriAlarm = alarmCacheInf.toneUri
+            uriAlarm = Uri.parse(alarmCacheInf.toneUri) //convertir string a uri
             volumeAlarma = alarmCacheInf.volumeLevel
             val vibrate = alarmCacheInf?.vibrate
             val campoNombre =  view.findViewById<EditText>(R.id.eventss)
@@ -150,7 +150,6 @@ class AlarmFragment(private val submenu: Boolean = false) : Fragment(), OnItemCl
             val text = view.findViewById<TextView>(R.id.textView3111)
             text.text = dateString
 
-            //hay que guardar los datos del tono de llamada ("URI")
             val sharedPreferencess = requireActivity().getPreferences(Context.MODE_PRIVATE)
             val editor = sharedPreferencess.edit()
             editor.remove("AlarmConfig") //Eliminamos el AlarmConfig tras volver al lobby y haber cargado toda la informacion requerida.
@@ -349,7 +348,31 @@ class AlarmFragment(private val submenu: Boolean = false) : Fragment(), OnItemCl
                 dayList = false
             }
 
-            selectedAlarmTone?.let { it1 -> uriAlarm?.let { it2 -> setAlarm(requireContext(), year, month, day, hour, minute, nombre, volumenLevel = volumeAlarma, toneUri = it2, diasRepetirMap = diasSemanaMap, dayList = dayList, vibrate = VibrationState, aplazarTime = timeAplazamiento) } }
+            Log.d("AlarmAcceptInfo", "El valor de nombre es: $nombre")
+            Log.d("AlarmAcceptInfo", "El valor de minuto es: $minute")
+            Log.d("AlarmAcceptInfo", "El valor de hour es: $hour")
+            Log.d("AlarmAcceptInfo", "El valor de year es: $year")
+            Log.d("AlarmAcceptInfo", "El valor de month es: $month")
+            Log.d("AlarmAcceptInfo", "El valor de day es: $day")
+            Log.d("AlarmAcceptInfo", "El valor de volumeAlarma es: $volumeAlarma")
+            Log.d("AlarmAcceptInfo", "El valor de selectedAlarmTone es: $selectedAlarmTone")
+            Log.d("AlarmAcceptInfo", "El valor de uriAlarm es: $uriAlarm")
+            Log.d("AlarmAcceptInfo", "El valor de diasSemanaMap es: $diasSemanaMap")
+            Log.d("AlarmAcceptInfo", "El valor de VibrationState es: $VibrationState")
+            Log.d("AlarmAcceptInfo", "El valor de dayList es: $dayList")
+
+
+
+
+
+
+
+
+
+
+
+
+            uriAlarm?.let { it2 -> setAlarm(requireContext(), year, month, day, hour, minute, nombre, volumenLevel = volumeAlarma, toneUri = it2, diasRepetirMap = diasSemanaMap, dayList = dayList, vibrate = VibrationState, aplazarTime = timeAplazamiento) }
 
         }
 
@@ -454,7 +477,7 @@ class AlarmFragment(private val submenu: Boolean = false) : Fragment(), OnItemCl
 data class AlarmCache(
     var sesion:String,
     var alarmName: String,
-    var toneUri: Uri? = null,
+    var toneUri: String? = null,
     var toneState:Boolean = true,
     var volumeLevel: Int,
     var vibrate:Boolean,
@@ -476,12 +499,15 @@ data class AlarmCache(
         return Gson().toJson(this)
     }
 
+
     companion object {
-        fun fromJson(json: String, java: Any): AlarmCache {
-            return Gson().fromJson(json, AlarmCache::class.java)
-        }
-        fun toJson(): String {
-            return Gson().toJson(this)
+
+
+
+
+        fun fromJson(json: String, clazz: Class<AlarmCache>): AlarmCache {
+            val alarmCache = Gson().fromJson(json, clazz)
+            return alarmCache
         }
     }
 }

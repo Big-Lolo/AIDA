@@ -4,7 +4,6 @@ import android.content.Context
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,13 +13,13 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import com.google.gson.Gson
 
 class MelodySelectorIt(): Fragment(), OnItemClickListener {
     private var listener: Home.OnHomeInteractionListener? = null
     private lateinit var listView: ListView
     private var urisong: Uri? = null
     private var songName: String = "Melodia Seleccionada: default"
+    private var songTitle: String = "default"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -48,8 +47,10 @@ class MelodySelectorIt(): Fragment(), OnItemClickListener {
         val textSelect = view.findViewById<TextView>(R.id.textView7)
         listView.setOnItemClickListener { _, _, position, _ ->
             val selectedMelody = adapter.getItem(position)
-            Log.d("SELECTED_SONG", "Se seleccionó $selectedMelody")
             songName = "Melodia Seleccionada: $selectedMelody"
+            if (selectedMelody != null) {
+                songTitle = selectedMelody
+            }
             textSelect.text = songName
             // Realizar acciones con el tono de alarma seleccionado
         }
@@ -66,6 +67,7 @@ class MelodySelectorIt(): Fragment(), OnItemClickListener {
 
                     val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
                     val alarmConfigString = sharedPreferences.getString("AlarmConfig", null)
+                    Log.d("URISONG", "AlarmConfigString es: $alarmConfigString")
 
                     if (alarmConfigString != null) {
                         // Convertir el JSON a un objeto (asumiendo que sea JSON)
@@ -74,12 +76,12 @@ class MelodySelectorIt(): Fragment(), OnItemClickListener {
 
                         // Actualizar los valores en el objeto según sea necesario
 
-
-                        alarmConfig.toneUri = getUriFromSongName(songName)
-
-
+                        var uriInfo = getUriFromSongName(songTitle)
+                        Log.d("URISONG", "La uri es: $uriInfo")
+                        val uriString = uriInfo.toString()
+                        alarmConfig.toneUri = uriString
                         // Convertir el objeto actualizado a JSON
-                        val updatedAlarmConfigString = Gson().toJson(alarmConfig)
+                        val updatedAlarmConfigString = alarmConfig.toJson()
 
                         // Guardar el valor actualizado de "AlarmConfig" en SharedPreferences
                         val editor = sharedPreferences.edit()
@@ -123,32 +125,24 @@ class MelodySelectorIt(): Fragment(), OnItemClickListener {
         return alarmTones
     }
 
-    private fun getUriFromSongName(songName: String): Uri? {
-        val projection = arrayOf(
-            MediaStore.Audio.Media._ID,
-            MediaStore.Audio.Media.DATA,
-            MediaStore.Audio.Media.DISPLAY_NAME
-        )
+    private fun getUriFromSongName(selectedAlarmToneName: String): Uri? {
+        val ringtoneManager = RingtoneManager(requireContext())
+        ringtoneManager.setType(RingtoneManager.TYPE_ALARM)
 
-        val selection = "${MediaStore.Audio.Media.DISPLAY_NAME} = ?"
-        val selectionArgs = arrayOf(songName)
+        val cursor = ringtoneManager.cursor
+        var selectedUri: Uri? = null
 
-        val cursor = requireContext().contentResolver.query(
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-            projection,
-            selection,
-            selectionArgs,
-            null
-        )
+        while (cursor.moveToNext()) {
+            val title = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX)
+            val uri = ringtoneManager.getRingtoneUri(cursor.position)
 
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val uriIndex = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
-                val uriString = it.getString(uriIndex)
-                return Uri.parse(uriString)
+            if (title == selectedAlarmToneName) {
+                selectedUri = uri
+                break
             }
         }
 
-        return null
+        cursor.close()
+        return selectedUri
     }
 }
