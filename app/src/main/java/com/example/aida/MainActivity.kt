@@ -82,8 +82,8 @@ class MainActivity : AppCompatActivity(), Home.OnHomeInteractionListener {
         replaceFragment(AlarmFragment(submenu))
     }
 
-    override fun onClockAlarmClicked(data: AlarmDetails) {
-        replaceFragment(AlarmEditFragment(data))
+    override fun onClockAlarmClicked(data: AlarmDetails?, submenu: Boolean) {
+        replaceFragment(AlarmEditFragment(data, submenu))
     }
 
     override fun onReturn2Home() {

@@ -22,10 +22,7 @@ class toneSelector(var submenu:Boolean = false): Fragment(), OnItemClickListener
     private var VolumenLevel: Int = 0
     private var activoSonido: Boolean = true
 
-    interface OnHomeInteractionListener {
 
-        fun onReturn2Home()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +50,22 @@ class toneSelector(var submenu:Boolean = false): Fragment(), OnItemClickListener
         }
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                listener?.onAlarmButtonClicked(submenu = true)
+                //Comprobacion de si id == -1 o diferente para abrir el alarmFragment o el editor.
+                val sharedPreferences22 = requireActivity().getPreferences(Context.MODE_PRIVATE)
+                val alarmConfigString2 = sharedPreferences22.getString("AlarmConfig", null)
+                var id = -1
+                if (alarmConfigString2 != null) {
+                    // Convertir el JSON a un objeto (asumiendo que sea JSON)
+                    val alarmConfig = fromJson(alarmConfigString2, AlarmCache::class.java)
+                    id = alarmConfig.codeId
+                }
+                if (id != -1) {
+                    listener?.onClockAlarmClicked(submenu = true)
+                }
+                    else{
+                    listener?.onAlarmButtonClicked(submenu = true)
+
+                }
                 remove()
             }
         })

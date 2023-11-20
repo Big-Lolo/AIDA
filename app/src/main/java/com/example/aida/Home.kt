@@ -111,8 +111,7 @@ class Home : Fragment(), OnItemClickListener  {
     }
     interface OnHomeInteractionListener {
         fun onAlarmButtonClicked(submenu: Boolean = false)
-        fun onClockAlarmClicked(data: AlarmDetails)
-
+        fun onClockAlarmClicked(data: AlarmDetails? = null, submenu: Boolean=false)
         fun onReturn2Home()
         fun openMusicSource(submenu: Boolean = false)
         fun openMelodySelector()
@@ -157,6 +156,7 @@ class Home : Fragment(), OnItemClickListener  {
         // Aquí puedes abrir el fragmento con la información deseada
         val dataList = getAllAlarms(requireContext())
         val data = dataList[position]
-        listener?.onClockAlarmClicked(data)
+        Log.d("home_click_ITEM", "ITEM CLICADO")
+        listener?.onClockAlarmClicked(data = data)
     }
 }

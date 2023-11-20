@@ -215,23 +215,24 @@ class chat : Fragment(), OnInitListener  {
 
 
                 }
-            }else {
+            else {
                 if (text != null && text.toString() != "") {
+                    var texto = text.text.toString()
+                    Log.d("msg_saved", "el texto es ${text.text.toString()}")
                     //messagechat.add(MessageProps(text.text.toString(), true))
-
-
                     lifecycleScope.launch {
                         withContext(Dispatchers.IO) {
                             messageDao.insert(
                                 Message(
                                     0,
-                                    text.text.toString(),
+                                    texto,
                                     true,
                                     Date().time.toLong(),
                                     false
                                 )
                             )
-                            val result = predicer.responseClass(text.text.toString())
+                            Log.d("Text2predice", "eefe ${texto}")
+                            val result = predicer.responseClass(texto)
                             val respuesta = result.first
                             val functions = result.second
                             print(respuesta)
@@ -248,9 +249,11 @@ class chat : Fragment(), OnInitListener  {
 
                     }
                 }
+                text?.setText("")
+            }
 
             }
-        text?.setText("")
+
         }
 
 

@@ -428,7 +428,7 @@ class AlarmFragment(private val submenu: Boolean = false) : Fragment(), OnItemCl
             minute = minute,
             alarmName = nombre.text.toString(),
             volumeLevel = 50,
-            toneUri = null,
+            toneUri = uriAlarm.toString(),
             diasSemanaMap = diasSemanaMap,
             dayList = dayList,
             vibrate = vibrate,
@@ -493,7 +493,8 @@ data class AlarmCache(
     var fechaSeleccionada:Date? = null,
     var dateString: String? = null,
     var typeofalarm: String? = null,
-    var volumeStatus:Boolean? = true
+    var volumeStatus:Boolean? = true,
+    var codeId:Int = -1
 ) {
     fun toJson(): String {
         return Gson().toJson(this)

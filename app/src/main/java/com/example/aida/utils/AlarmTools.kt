@@ -6,7 +6,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
-import android.net.Uri
 import com.example.aida.AlarmReceiver
 import com.google.gson.Gson
 
@@ -28,21 +27,22 @@ class AlarmTools {
         }
 
         @SuppressLint("ScheduleExactAlarm")
-        fun setAlarm(context: Context,
-                     year: Int,
-                     month: Int,
-                     day: Int,
-                     hour: Int,
-                     minute: Int,
-                     alarmName: String,
-                     toneUri: Uri,
-                     volumenLevel: Int,
-                     diasRepetirMap: Map<String, Boolean>,
-                     dayList:Boolean,
-                     vibrate:Boolean,
-                     aplazarTime:Int,
-                     edit: Boolean = false,
-                     identifier : Int = 0
+        fun setAlarm(
+            context: Context,
+            year: Int,
+            month: Int,
+            day: Int,
+            hour: Int,
+            minute: Int,
+            alarmName: String,
+            toneUri: Comparable<Nothing>?,
+            volumenLevel: Int,
+            diasRepetirMap: Map<String, Boolean>,
+            dayList:Boolean,
+            vibrate:Boolean,
+            aplazarTime:Int,
+            edit: Boolean = false,
+            identifier: Int = 0
         ) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 

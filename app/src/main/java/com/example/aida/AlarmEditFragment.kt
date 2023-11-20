@@ -1,6 +1,5 @@
 package com.example.aida
 
-import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
@@ -18,7 +17,6 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.TimePicker
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -28,7 +26,7 @@ import com.example.aida.utils.AlarmTools.Companion.deleteAlarm
 import java.sql.Date
 import java.text.SimpleDateFormat
 
-class AlarmEditFragment(private val datas: AlarmDetails): Fragment(), OnItemClickListener {
+class AlarmEditFragment(private var datas: AlarmDetails? = null, private var submenu:Boolean = false): Fragment(), OnItemClickListener {
     private var diasSemanaMap = mutableMapOf<String, Boolean>(
         "Lunes" to false,
         "Martes" to false,
@@ -38,35 +36,32 @@ class AlarmEditFragment(private val datas: AlarmDetails): Fragment(), OnItemClic
         "Sábado" to false,
         "Domingo" to false
     )
+
     private var selectedAlarmTone: Uri? = null
     private var fechaSeleccionada: Date? = null
     private var dayList : Boolean = false
     private var dateString:String? = null
-    private val nombreAlarma = datas.alarmName
-    private val horaAlarma = datas.hour
-    private val minutoAlarma = datas.minute
-    private val vibracion = datas.vibrate
-    private val uriSong = datas.toneUri
-    private val enable = datas.active
-    private val dayListMap = datas.diasRepetirMap
-    private val day = datas.day
-    private val month = datas.month
-    private val year = datas.year
-    private val isDaylist = datas.dayList
-    private val codeId = datas.id
+    private var nombreAlarma = datas?.alarmName
+    private var horaAlarma = datas?.hour
+    private var minutoAlarma = datas?.minute
+    private var vibracion = datas?.vibrate
+    private var uriSong = datas?.toneUri
+    private var dayListMap = datas?.diasRepetirMap
+    private var day = datas?.day
+    private var month = datas?.month
+    private var year = datas?.year
+    private var isDaylist = datas?.dayList
+    private var codeId =  datas?.id
     private var listener: Home.OnHomeInteractionListener? = null
+    private var typeofalarm: String? = null
 
     interface OnHomeInteractionListener {
-
         fun onReturn2Home()
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Resto del código
     }
-
-
 
 
     override fun onCreateView(
@@ -88,8 +83,32 @@ class AlarmEditFragment(private val datas: AlarmDetails): Fragment(), OnItemClic
                 remove()
             }
         })
-        val buttonSelectDate: Button = view.findViewById(R.id.calendarpk2)
+        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        val alarmConfigJson = sharedPreferences.getString("AlarmConfig", null)
+        val alarmCacheInf = alarmConfigJson?.let {
+            AlarmCache.fromJson(
+                it,
+                AlarmCache::class.java
+            )
+        }
+        if(submenu) {
+            nombreAlarma = alarmCacheInf?.alarmName
+            horaAlarma = alarmCacheInf?.hour
+            minutoAlarma = alarmCacheInf?.minute
+            vibracion = alarmCacheInf?.vibrate
+            uriSong = Uri.parse(alarmCacheInf?.toneUri).toString()
+            dayListMap = alarmCacheInf?.diasSemanaMap
+            day = alarmCacheInf?.day
+            month = alarmCacheInf?.month
+            year = alarmCacheInf?.year
+            Log.d("FECHA_CARGADA", "LA FECHA ES: $day de $month de $year")
+            isDaylist = alarmCacheInf?.dayList
+            codeId = alarmCacheInf?.codeId
+            typeofalarm = alarmCacheInf?.typeofalarm
+        }
 
+
+        val buttonSelectDate: Button = view.findViewById(R.id.calendarpk2)
         buttonSelectDate.setOnClickListener {
             // Al hacer clic, abre el selector de fecha
             showDatePickerDialog(view, true)
@@ -100,19 +119,20 @@ class AlarmEditFragment(private val datas: AlarmDetails): Fragment(), OnItemClic
         campoNombre.setText(nombreAlarma)
         val timePicker = view.findViewById<TimePicker>(R.id.datePicker12) //
         timePicker.setIs24HourView(true)
-        val hour: Int = horaAlarma
-        val minute: Int = minutoAlarma
+        val hour: Int? = horaAlarma
+        val minute: Int? = minutoAlarma
 
         if (Build.VERSION.SDK_INT >= 23) {
-             timePicker.hour = hour
-             timePicker.minute = minute
-        } else {
-            timePicker.currentHour = hour // Obsoleto a partir del nivel de API 23
-            timePicker.currentMinute = minute // Obsoleto a partir del nivel de API 23
+            if (hour != null) {
+                timePicker.hour = hour
+            }
+            if (minute != null) {
+                timePicker.minute = minute
+            }
         }
 
 
-        if(isDaylist) {
+        if(isDaylist == true) {
             val diasSemanaIds = intArrayOf(
                 R.id.lunes2,
                 R.id.martes2,
@@ -122,7 +142,7 @@ class AlarmEditFragment(private val datas: AlarmDetails): Fragment(), OnItemClic
                 R.id.sabado2,
                 R.id.domingo2
             )
-            for ((index, entry) in dayListMap.entries.withIndex()) {
+            for ((index, entry) in dayListMap?.entries?.withIndex()!!) {
                 val dia = entry.key
                 val estaActivo = entry.value
 
@@ -140,15 +160,10 @@ class AlarmEditFragment(private val datas: AlarmDetails): Fragment(), OnItemClic
 
         //Setear el switch de la vibración
         val switchVibracion= view.findViewById<SwitchCompat>(R.id.vibrateSwitch2)
-        switchVibracion.isChecked = vibracion
+        if (vibracion != null) {
+            switchVibracion.isChecked = vibracion as Boolean
+        }
 
-        //Si hay uri, setear el switch del sonido
-        val switchSonido = view.findViewById<SwitchCompat>(R.id.vibrateSwitch2)
-        switchSonido.isChecked = uriSong != null
-
-        //Setea si esta activa o inactiva la alarma
-        val switchActiva= view.findViewById<SwitchCompat>(R.id.vibrateSwitch3)
-        switchActiva.isChecked = enable
         //Edicion de alarmas
 
         val diasSemanaIds = intArrayOf(R.id.lunes2, R.id.martes2, R.id.miercoles2, R.id.jueves2, R.id.viernes2, R.id.sabado2, R.id.domingo2)
@@ -206,7 +221,9 @@ class AlarmEditFragment(private val datas: AlarmDetails): Fragment(), OnItemClic
 
             //Primero hay que cancelar la alarma antigua y despues crear una nueva con la misma id:
             Log.d("ALARMID", "LA ID DE LA ALARMA ES $codeId")
-            deleteAlarm(requireContext(), codeId) //Esto cancelara la alarma y la borrará del preference.
+            if (codeId != null) {
+                deleteAlarm(requireContext(), codeId!!)
+            } //Esto cancelara la alarma y la borrará del preference.
 
 
             val timePicker2 = view.findViewById<TimePicker>(R.id.datePicker12)
@@ -244,42 +261,33 @@ class AlarmEditFragment(private val datas: AlarmDetails): Fragment(), OnItemClic
             if (todosDiasFalse){
                 dayList = false
             }
-            selectedAlarmTone?.let { it1 ->
-                AlarmTools.setAlarm(
-                    requireContext(),
-                    year2,
-                    month2,
-                    day2,
-                    hour2,
-                    minute2,
-                    nombre2,
-                    volumenLevel = 50,
-                    toneUri = it1,
-                    diasRepetirMap = diasSemanaMap,
-                    dayList = dayList,
-                    vibrate = VibrationState,
-                    aplazarTime = timeAplazamiento,
-                    edit = true,
-                    identifier = codeId
-                )
+                if (codeId != null) {
+                    AlarmTools.setAlarm(
+                        requireContext(),
+                        year2,
+                        month2,
+                        day2,
+                        hour2,
+                        minute2,
+                        nombre2,
+                        volumenLevel = 50,
+                        toneUri = uriSong,
+                        diasRepetirMap = diasSemanaMap,
+                        dayList = dayList,
+                        vibrate = VibrationState,
+                        aplazarTime = timeAplazamiento,
+                        edit = true,
+                        identifier = codeId!!
+                    )
+
             }
 
         }
 
 
         cancelButton.setOnClickListener {
-            val nuevoFragmento = Home()
 
-            // Reemplazar el fragmento actual con el nuevo fragmento
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.phatherContainerB, nuevoFragmento)
-                .addToBackStack(null) // Agregar a la pila de retroceso
-                .commit()
-
-            // Eliminar el fragmento actual
-            requireActivity().supportFragmentManager.beginTransaction()
-                .remove(this)
-                .commit()        }
+                   }
 
 
 
@@ -307,14 +315,39 @@ class AlarmEditFragment(private val datas: AlarmDetails): Fragment(), OnItemClic
 
 
     }
+    fun convertFechaActual(day: Int?, month: Int?, year: Int?): Triple<Int, Int, Int> {
+        val calendarHoy = Calendar.getInstance()
 
-    fun showDatePickerDialog(vieww: View, isSetting:Boolean = false) {
+        val currentYear = calendarHoy.get(Calendar.YEAR)
+        val currentMonth = calendarHoy.get(Calendar.MONTH)
+        val currentDay = calendarHoy.get(Calendar.DAY_OF_MONTH)
+
+        return if (year == currentYear && month == currentMonth && day == currentDay) {
+            Triple(currentYear, currentMonth, currentDay)
+        } else if (calendarHoy.after(Calendar.getInstance().apply { set(year ?: 0, month ?: 0, day ?: 0) })) {
+            Triple(currentYear, currentMonth, currentDay)
+        } else {
+            Triple(year ?: 0, month ?: 0, day ?: 0)
+        }
+    }
+    fun showDatePickerDialog(vieww: View, isSetting: Boolean = false) {
+        Log.d("FECHA_CARGADA_datapicker", "LA FECHA ES: $day de $month de $year")
+
+        val (convertedYear, convertedMonth, convertedDay) = convertFechaActual(day, month, year)
+
+        Log.d("FECHA_CARGADA_datapicker2", "LA FECHA ES: $convertedDay de $convertedMonth de $convertedYear")
+
         val datePicker = context?.let {
+            val initialYear = if (isSetting) convertedYear else Calendar.getInstance().get(Calendar.YEAR)
+            val initialMonth = if (isSetting) convertedMonth?.minus(1) else Calendar.getInstance().get(Calendar.MONTH)
+            val initialDay = if (isSetting) convertedDay else Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+
             DatePickerDialog(
                 it,
-                { view, year, month, dayOfMonth ->
-                    val selectedCalendar = Calendar.getInstance()
-                    selectedCalendar.set(year, month, dayOfMonth)
+                { _, year, month, dayOfMonth ->
+                    val selectedCalendar = Calendar.getInstance().apply {
+                        set(year, month, dayOfMonth)
+                    }
                     fechaSeleccionada = Date(selectedCalendar.timeInMillis)
                     val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
                     val formattedDate = simpleDateFormat.format(fechaSeleccionada)
@@ -324,40 +357,31 @@ class AlarmEditFragment(private val datas: AlarmDetails): Fragment(), OnItemClic
                     dayList = false
                     restartListDay()
                     if (selectedCalendar.get(Calendar.YEAR) == calendarHoy.get(Calendar.YEAR) &&
-                        selectedCalendar.get(Calendar.DAY_OF_YEAR) == calendarHoy.get(
-                            Calendar.DAY_OF_YEAR
-                        )) {
+                        selectedCalendar.get(Calendar.DAY_OF_YEAR) == calendarHoy.get(Calendar.DAY_OF_YEAR)) {
                         dateString = "Hoy"
                         text.text = "Hoy"
-
                     } else {
                         calendarHoy.add(Calendar.DAY_OF_YEAR, 1)
                         if (selectedCalendar.get(Calendar.YEAR) == calendarHoy.get(Calendar.YEAR) &&
-                            selectedCalendar.get(Calendar.DAY_OF_YEAR) == calendarHoy.get(
-                                Calendar.DAY_OF_YEAR
-                            )) {
-
+                            selectedCalendar.get(Calendar.DAY_OF_YEAR) == calendarHoy.get(Calendar.DAY_OF_YEAR)) {
                             dateString = "Mañana"
                             text.text = "Mañana"
-
-                        }else {
+                        } else {
                             dateString = formattedDate
                             text.text = formattedDate
                         }
                     }
                 },
                 // Configura la fecha actual como fecha predeterminada
-                Calendar.getInstance().get(if (isSetting){year}else{Calendar.YEAR}),
-                Calendar.getInstance().get(if (isSetting){month - 1}else{Calendar.MONTH}),
-                Calendar.getInstance().get(if (isSetting){day}else{Calendar.DAY_OF_MONTH})
+                initialYear,
+                initialMonth ?: 0,
+                initialDay ?: 1
             )
         }
+
         val calendarHoy = Calendar.getInstance()
         datePicker?.datePicker?.minDate = calendarHoy.timeInMillis
         datePicker?.show()
-
-
-
     }
 
     fun obtenerDiasSeleccionados(): String {
@@ -398,26 +422,63 @@ class AlarmEditFragment(private val datas: AlarmDetails): Fragment(), OnItemClic
 
     private fun selectAlarmTone(view: View) {
         val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
-        // Configurar el intent según sea necesario, por ejemplo:
-        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
-        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Seleccionar alarma")
-
-        resultLauncher.launch(intent)
-    }
-
-    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val uri: Uri? = result.data?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
-            // Hacer algo con la URI de la alarma seleccionada
-            if (uri != null) {
-                selectedAlarmTone = uri
-            } else {
-                // El usuario no seleccionó ninguna alarma
-            }
-        } else {
-            // La selección de alarma falló o se canceló
+        val calendar = Calendar.getInstance()
+        val currentDate = calendar.time
+        if (fechaSeleccionada == null) {
+            calendar.time = currentDate
+        }else{
+            calendar.time = fechaSeleccionada
         }
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH) + 1
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val timePicker = view.findViewById<TimePicker>(R.id.datePicker12) // Reemplaza R.id.timePicker con tu ID real
+        val hour: Int = timePicker.hour
+        val minute: Int = timePicker.minute
+        val switchVibration = view.findViewById<SwitchCompat>(R.id.vibrateSwitch2)
+        var vibrate = switchVibration.isChecked
+        val nombre = view.findViewById<EditText>(R.id.eventss2)
+
+        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        var AlarmCacheInf = codeId?.let {
+            AlarmCache(
+                sesion = "AlarmFragment",
+                month = month,
+                day = day,
+                year = year,
+                hour = hour,
+                minute = minute,
+                alarmName = nombre.text.toString(),
+                volumeLevel = 50,
+                toneUri = uriSong.toString(),
+                diasSemanaMap = diasSemanaMap,
+                dayList = dayList,
+                vibrate = vibrate,
+                aplazamiento = 5,
+                fechaSeleccionada = fechaSeleccionada,
+                dateString = dateString,
+                typeofalarm = typeofalarm,
+                codeId = it
+            )
+        }
+
+
+        if (AlarmCacheInf != null) {
+            editor.putString("AlarmConfig", AlarmCacheInf.toJson())
+        }
+        editor.apply()
+        listener?.openMusicSource()
     }
+
+
+
+
+
+
+
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

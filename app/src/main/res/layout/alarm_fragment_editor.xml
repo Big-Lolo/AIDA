@@ -241,22 +241,11 @@
                         android:layout_below="@+id/eventss2"
                         />
 
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/vibrateSwitch3"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Alarma activa"
-                        android:layout_marginLeft="45dp"
-                        android:layout_marginRight="40dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_below="@+id/vibrateSwitch2"
-                        />
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:layout_below="@+id/vibrateSwitch3"
+                        android:layout_below="@+id/vibrateSwitch2"
                         android:id="@+id/selectToneButton2"
                         android:background="@color/graybot"
                         android:layout_marginLeft="45dp"
