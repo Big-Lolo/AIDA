@@ -1,5 +1,6 @@
 package com.example.aida
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.speech.RecognitionListener
@@ -25,6 +26,8 @@ import com.chaquo.python.android.AndroidPlatform
 import com.example.aida.DataBase.Database
 import com.example.aida.DataBase.Message
 import com.example.aida.DataBase.MessageDao
+import com.example.aida.conectivity2model.CallSystem
+import com.example.aida.conectivity2model.NetworkUtils
 import com.example.aida.serialization.WordsAndClasses
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,6 +36,7 @@ import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.common.FileUtil
 import java.util.Calendar
 import java.util.Date
+
 
 
 typealias SpeechRecognitionCallback = (String) -> Unit
@@ -125,6 +129,13 @@ class chat : Fragment(), OnInitListener  {
 
         return rootView
     }
+
+    fun ejecutarFuncion(nombreFuncion: String, vararg argumentos: Any, contexte: Context) {
+        val instancia = NetworkUtils(contexte)
+        val funcion = instancia::class.java.getDeclaredMethod(nombreFuncion, *argumentos.map { it::class.java }.toTypedArray())
+        funcion.invoke(instancia, *argumentos)
+    }
+
 
     companion object {
         /**
@@ -234,10 +245,21 @@ class chat : Fragment(), OnInitListener  {
                             Log.d("Text2predice", "eefe ${texto}")
                             val result = predicer.responseClass(texto)
                             val respuesta = result.first
-                            val functions = result.second
-                            print(respuesta)
-                            messageDao.insert(Message(0, respuesta, false, Date().time.toLong(), false))
+                            val functionallamar = result.second?.toString()
+                            val clasefuncionName = result.third?.toString()
+                            Log.d("FuncionBOT", "LA FUNCION ES $functionallamar")
+                            Log.d("FuncionBOT", "LA CLASE ES $clasefuncionName")
 
+                            val argumento1 = context
+                            val argumento2 = texto
+                            val instancia = CallSystem
+                            if (functionallamar != null) {
+                                if (argumento1 != null) {
+                                    context?.let { instancia.interpretActionCall(argumento1, argumento2) }
+                                }
+                            }
+
+                            messageDao.insert(Message(0, respuesta, false, Date().time.toLong(), false))
                             val msg = messageDao.getAll()
                             messagechat = msg
                         }
@@ -255,6 +277,8 @@ class chat : Fragment(), OnInitListener  {
             }
 
         }
+
+
 
 
     private fun startSpeechToText(callback: SpeechRecognitionCallback) {

@@ -3,12 +3,9 @@ package com.example.aida.serialization
 import android.content.Context
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.tensorflow.lite.Interpreter
-import edu.stanford.nlp.ling.CoreAnnotations
-import edu.stanford.nlp.ling.CoreLabel
-import edu.stanford.nlp.pipeline.StanfordCoreNLP
 import edu.stanford.nlp.simple.Document
-import java.util.*
+import org.tensorflow.lite.Interpreter
+import java.util.Locale
 
 
 class WordsAndClasses(private val modelInterpreter: Interpreter, private val context: Context) {
@@ -109,15 +106,16 @@ class WordsAndClasses(private val modelInterpreter: Interpreter, private val con
     }
 
 
-    fun getResponse(intentsList: List<Map<String, Any>>, intentsJson: Map<String, Any>): Pair<String, String?> {
+    fun getResponse(intentsList: List<Map<String, Any>>, intentsJson: Map<String, Any>): Triple<String, String?, String?> {
         val tag = intentsList[0]["intent"] as String
         if (tag == "Desconocido") {
-            return Pair("Lo siento, no entiendo lo que quieres decir. ¿Podrías reformular tu pregunta?", null)
+            return Triple("Lo siento, no entiendo lo que quieres decir. ¿Podrías reformular tu pregunta?", null, null)
         }
 
         val list_of_intents = intentsJson["intents"] as List<Map<String, Any>>
         var result = ""
         var functions: String? = null
+        var classics: String? = null
 
         for (i in list_of_intents) {
             if (i["tag"] == tag) {
@@ -128,14 +126,19 @@ class WordsAndClasses(private val modelInterpreter: Interpreter, private val con
                 if (function != null) {
                     functions = function.toString()
                 }
+
+                val classic = i["classes"]
+                if (function != null) {
+                    classics = classic.toString()
+                }
                 break
             }
         }
 
-        return Pair(result, functions)
+        return Triple(result, functions, classics)
     }
 
-    fun responseClass(sentence: String): Pair<String, String?> {
+    fun responseClass(sentence: String): Triple<String, String?, String?> {
 
         var a = predictClass(sentence)
         return getResponse(a, intentsDoc)

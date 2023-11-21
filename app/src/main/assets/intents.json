@@ -92,7 +92,8 @@
     {"tag":"llamada",  
     "patterns":["Llama a manolo y activa el manos libres", "Llama a jesus y activa el altavoz", "Haz una llamada a jose y pon el altavoz que estoy sordo", "llama al 616235463 y pon el altavoz","Inicia una llamada a Ana y pon el altavoz, por favor", "Llama al 123456789 en manos libres, por favor", "Llama a papá y asegúrate de poner el altavoz", "Haz una llamada a Juan y pon el altavoz, estoy en el coche", "Llama al contacto de emergencia y activa el altavoz", "Llama a Laura y pon el altavoz para que todos escuchen", "Marcar al 987654321 en altavoz", "Realiza una llamada a Pedro y pon el manos libres", "Llama a Isabel y asegúrate de poner el altavoz", "Haz una llamada al contacto de trabajo y activa el manos libres", "Marcar al 555123456 con altavoz", "Llama a Sandra y activa el manos libres, por favor", "Iniciar una llamada a Carlos y poner el altavoz", "Llama a Antonio y pon el manos libres, estoy ocupado", "Llama al número de emergencia y activa el altavoz", "Haz una llamada a María y asegúrate de poner el manos libres", "Llama a Daniel y pon el altavoz, por favor", "Realizar una llamada a Laura y activar el manos libres", "Marcar al 111222333 con manos libres", "Llama a Jorge y asegúrate de poner el manos libres", "Llama al 456789123 en manos libres, por favor", "Iniciar una llamada a Marta y poner el altavoz", "Llama a Adrián y activa el manos libres, estoy en la calle", "Marcar al contacto de emergencia con altavoz", "Llama a Raquel y asegúrate de poner el altavoz", "Haz una llamada a Laura y pon el altavoz, estoy en una reunión" , "Llama a mama y activa el manos libres que estoy conduciendo", "Llama a Manuel y activame el altavoz"],
     "responses":["De acuerdo!", "Entendido!"],
-    "function":"realize_call"
+    "function":"calL2interpretActionCall",
+        "classes": "com.example.aida.conectivity2model.CallSystem"
     },
 
     {"tag":"solicitud_mensaje_whatsapp",  

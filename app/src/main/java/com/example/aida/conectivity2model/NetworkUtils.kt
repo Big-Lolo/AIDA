@@ -1,10 +1,11 @@
-package com.example.aida.conectivity
+package com.example.aida.conectivity2model
 
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
+import android.util.Log
 
 
 class NetworkUtils(private val context: Context) {
@@ -33,6 +34,8 @@ class NetworkUtils(private val context: Context) {
 
     fun setWifiEnabled(context: Context, enabled: Boolean) {
         //Hacer esto con permisos de accesibilidad, ya que esta depreciado el metodo con la api
-        
+
     }
+
+
 }
