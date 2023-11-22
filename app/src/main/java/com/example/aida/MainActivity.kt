@@ -14,6 +14,7 @@ import com.example.aida.utils.AlarmDetails
 
 
 class MainActivity : AppCompatActivity(), Home.OnHomeInteractionListener {
+    private lateinit var speechRecognizerManager: SpeechRecognizerManager
 
     private lateinit var binding : ActivityMainBinding
 
@@ -35,6 +36,12 @@ class MainActivity : AppCompatActivity(), Home.OnHomeInteractionListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         replaceFragment(Home())
+
+        speechRecognizerManager = SpeechRecognizerManager(this)
+        speechRecognizerManager.initialize()
+        speechRecognizerManager.startListening()
+
+
 
 
 
