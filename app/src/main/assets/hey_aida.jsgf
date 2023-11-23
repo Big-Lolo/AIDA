@@ -1,3 +1,4 @@
 #JSGF V1.0;
+grammar heyaida;
 
-public <heyaida> = heyaida;
+public <command> = "hey aida";
