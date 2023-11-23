@@ -13,7 +13,7 @@ import java.io.IOException
 
 class SpeechRecognizerManager(private val context: Context) : RecognitionListener {
     private val KWS_SEARCH = "wakeup"
-    private val KEYPHRASE = "computer"
+    private val KEYPHRASE = "aida"
     private var recognizer: SpeechRecognizer? = null
 
     fun initialize() {
@@ -32,7 +32,8 @@ class SpeechRecognizerManager(private val context: Context) : RecognitionListene
             .setAcousticModel(File(assetDir, ""))
             .setDictionary(File(assetDir, "cmudict-en-us.dict"))
             .setRawLogDir(assetDir)
-            .setKeywordThreshold((-10.0).toFloat())
+            .setKeywordThreshold(1.2e-5f)
+            .setSampleRate(16000)
             .recognizer
         recognizer?.addListener(this)
 
@@ -152,7 +153,7 @@ class SpeechRecognizerManager(private val context: Context) : RecognitionListene
         Log.d("onResult", "ONRESULT RECIBIDO")
         val result = hypothesis?.hypstr
         if (!result.isNullOrBlank()) {
-            Log.d("SpeechRecognition", "EJECUTAR LA FUNCIÓN DE LO QUE SEA")
+            Log.d("SpeechRecognition", "EJECUTAR LA FUNCIÓN DE LO QUE SEA, palabra $result")
 
         }
         recognizer?.startListening(KWS_SEARCH)
