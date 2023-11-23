@@ -32,7 +32,7 @@ class SpeechRecognizerManager(private val context: Context) : RecognitionListene
             .setAcousticModel(File(assetDir, ""))
             .setDictionary(File(assetDir, "cmudict-en-us.dict"))
             .setRawLogDir(assetDir)
-            .setKeywordThreshold(1.4E-45f)
+            .setKeywordThreshold((-10.0).toFloat())
             .recognizer
         recognizer?.addListener(this)
 
@@ -141,7 +141,9 @@ class SpeechRecognizerManager(private val context: Context) : RecognitionListene
         // Se llama cuando hay un resultado parcial disponible
         val result = hypothesis?.hypstr
         if (!result.isNullOrBlank()) {
-            Log.d("SpeechRecognition", "Resultado parcial: $result")
+            if (result == KEYPHRASE) {
+                recognizer?.stop()
+            }
         }
     }
 
@@ -150,11 +152,10 @@ class SpeechRecognizerManager(private val context: Context) : RecognitionListene
         Log.d("onResult", "ONRESULT RECIBIDO")
         val result = hypothesis?.hypstr
         if (!result.isNullOrBlank()) {
-            Log.d("SpeechRecognition", "Resultado final: $result")
-        }
+            Log.d("SpeechRecognition", "EJECUTAR LA FUNCIÓN DE LO QUE SEA")
 
-        Log.d("SpeechRecognition", "ESCUCHA DETENIDA")
-        recognizer?.stop()
+        }
+        recognizer?.startListening(KWS_SEARCH)
     }
 
     override fun onError(e: Exception?) {
