@@ -10,12 +10,22 @@ import edu.cmu.pocketsphinx.SpeechRecognizerSetup
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-
+interface SpeechObserver {
+    fun onSpeechDetected()
+}
 class SpeechRecognizerManager(private val context: Context) : RecognitionListener {
     private val KWS_SEARCH = "wakeup"
     private val KEYPHRASE = "aida"
     private var recognizer: SpeechRecognizer? = null
+    private var speechObserver: SpeechObserver? = null
 
+    fun setSpeechObserver(observer: SpeechObserver) {
+        this.speechObserver = observer
+    }
+
+    private fun notifySpeechDetected() {
+        speechObserver?.onSpeechDetected()
+    }
     fun initialize() {
         Log.d("DEBUG", "Iniciando el método initialize")
 
@@ -154,7 +164,7 @@ class SpeechRecognizerManager(private val context: Context) : RecognitionListene
         val result = hypothesis?.hypstr
         if (!result.isNullOrBlank()) {
             Log.d("SpeechRecognition", "EJECUTAR LA FUNCIÓN DE LO QUE SEA, palabra $result")
-
+            notifySpeechDetected()
         }
         recognizer?.startListening(KWS_SEARCH)
     }
