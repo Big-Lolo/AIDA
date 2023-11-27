@@ -3,6 +3,7 @@ package com.example.aida
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
@@ -28,7 +29,8 @@ class MainActivity : AppCompatActivity(), Home.OnHomeInteractionListener {
 
         //Para llamar al servicio background que tiene la activity de la desactivacion de alarma.
 
-
+        val intenter = Intent(this, VoiceRecognitionService::class.java)
+        startService(intenter)
 
 
         Thread.sleep(2000)

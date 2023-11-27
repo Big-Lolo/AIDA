@@ -36,21 +36,6 @@ class AlarmReceiver : BroadcastReceiver() {
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         val alarmName = intent?.getStringExtra("alarmName")
         val toneUriString = intent?.getStringExtra("toneUri")
         val volumeLevel = intent?.getIntExtra("volumeLevel", 0) ?: 0
@@ -79,6 +64,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 contexte, 0, intent,
                 PendingIntent.FLAG_IMMUTABLE
             )
+
 
             val alarmManager = contexte.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val serviceIntent = Intent(contexte, MyBackgroundService::class.java)

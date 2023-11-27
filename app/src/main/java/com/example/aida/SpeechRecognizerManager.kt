@@ -1,7 +1,10 @@
 package com.example.aida
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.AssetManager
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import edu.cmu.pocketsphinx.Hypothesis
 import edu.cmu.pocketsphinx.RecognitionListener
@@ -18,6 +21,8 @@ class SpeechRecognizerManager(private val context: Context) : RecognitionListene
     private val KEYPHRASE = "aida"
     private var recognizer: SpeechRecognizer? = null
     private var speechObserver: SpeechObserver? = null
+    private val handler = Handler(Looper.getMainLooper())
+
 
     fun setSpeechObserver(observer: SpeechObserver) {
         this.speechObserver = observer
@@ -50,6 +55,10 @@ class SpeechRecognizerManager(private val context: Context) : RecognitionListene
         val keywordFile = File(assetDir, "hey_aida.jsgf")
 
         recognizer?.addKeyphraseSearch(KWS_SEARCH, KEYPHRASE)
+
+        handler.postDelayed({
+            notifySpeechDetected()
+        }, 10000)
     }
 
     private fun copyAssetDirectory(assetManager: AssetManager, sourceDir: String, destinationDir: File) {
@@ -102,7 +111,7 @@ class SpeechRecognizerManager(private val context: Context) : RecognitionListene
         Log.d("DEBUG", "Copiando archivo: $sourcePath a $destinationPath")
 
         val correctedDestinationPath = if (sourcePath.contains("en-us-ptm/")) {
-            appendSourcePath(destinationPath, sourcePath)
+            destinationPath
         } else {
             removeEnUsPtm(destinationPath)
         }
@@ -164,7 +173,9 @@ class SpeechRecognizerManager(private val context: Context) : RecognitionListene
         val result = hypothesis?.hypstr
         if (!result.isNullOrBlank()) {
             Log.d("SpeechRecognition", "EJECUTAR LA FUNCIÓN DE LO QUE SEA, palabra $result")
-            notifySpeechDetected()
+            val intent = Intent("com.tuapp.OPEN_ASSISTANT")
+            intent.addCategory("android.intent.category.DEFAULT")
+
         }
         recognizer?.startListening(KWS_SEARCH)
     }
