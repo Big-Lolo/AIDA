@@ -20,9 +20,9 @@ class AlarmReceiver : BroadcastReceiver() {
     @SuppressLint("MissingPermission")
     override fun onReceive(contexte: Context?, intent: Intent?) {
 
-
-
-
+    if(intent?.action =="ABRIR_NOTI"){
+        Log.d("recibidoBroadcast", "Se recibio en este broadcast")
+    }else{
         val allAlarms = contexte?.let { getAllAlarms(it) }
 
         if (allAlarms != null) {
@@ -41,20 +41,32 @@ class AlarmReceiver : BroadcastReceiver() {
         val volumeLevel = intent?.getIntExtra("volumeLevel", 0) ?: 0
         val vibrate = intent?.getBooleanExtra("vibrate", false)
         Log.d("BroadcastReciver", "Context is null: ${contexte == null}")
-        val keyguardManager = contexte?.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+        val keyguardManager =
+            contexte?.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
         val isScreenLocked = keyguardManager.isKeyguardLocked
         val powerManager = contexte.getSystemService(Context.POWER_SERVICE) as PowerManager
         val isScreenOn = powerManager.isInteractive
         Log.d("BroadcastReciver", "La pantalla esta $isScreenOn")
-        if(isScreenLocked or !isScreenOn) {
+        if (isScreenLocked or !isScreenOn) {
 
             if (vibrate != null) {
-                contexte.showNotificationWithFullScreenIntent(true, contextex = contexte, toneUriString = toneUriString.toString(), volumeLevel = volumeLevel, vibrate = vibrate)
+                contexte.showNotificationWithFullScreenIntent(
+                    true,
+                    contextex = contexte,
+                    toneUriString = toneUriString.toString(),
+                    volumeLevel = volumeLevel,
+                    vibrate = vibrate
+                )
             }
 
         } else {
             if (vibrate != null) {
-                contexte.showNotificationWithFullScreenIntent(contextex = contexte, toneUriString = toneUriString.toString(), volumeLevel = volumeLevel, vibrate = vibrate)
+                contexte.showNotificationWithFullScreenIntent(
+                    contextex = contexte,
+                    toneUriString = toneUriString.toString(),
+                    volumeLevel = volumeLevel,
+                    vibrate = vibrate
+                )
             }
         }
 
@@ -70,11 +82,12 @@ class AlarmReceiver : BroadcastReceiver() {
             val serviceIntent = Intent(contexte, MyBackgroundService::class.java)
             contexte.stopService(serviceIntent)
             alarmManager.cancel(pendingIntent)
-            val notificationManager = contexte.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager =
+                contexte.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.cancel(123)
 
         }
-
+    }
     }
 
 

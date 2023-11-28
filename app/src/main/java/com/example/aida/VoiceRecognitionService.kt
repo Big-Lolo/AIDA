@@ -8,13 +8,14 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.graphics.PixelFormat
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.provider.Settings
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.WindowManager
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 class VoiceRecognitionService : Service(), SpeechObserver {
     private lateinit var speechRecognizerManager: SpeechRecognizerManager
     private val handler = Handler(Looper.getMainLooper())
@@ -32,7 +33,7 @@ class VoiceRecognitionService : Service(), SpeechObserver {
     override fun onCreate() {
 
         super.onCreate()
-        startForeground(5, createNotification())
+        //startForeground(5, createNotification())
         speechRecognizerManager = SpeechRecognizerManager(this)
         speechRecognizerManager.setSpeechObserver(this)
         speechRecognizerManager.initialize()
@@ -40,19 +41,10 @@ class VoiceRecognitionService : Service(), SpeechObserver {
 
         Log.d("VoiceRecognitionService", "Iniciado el servicio.")
         handler.postDelayed({
-            val notificationManager = NotificationManagerCompat.from(this)
-            val intent = Intent(this, DummyActivity::class.java)
-            val builder = NotificationCompat.Builder(this, "channelid")
-                .setSmallIcon(android.R.drawable.arrow_up_float)
-                .setContentTitle("Asistente AIDA")
-                .setContentText("Asistente AIDA")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setFullScreenIntent(PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE), true)
-                notificationManager.notify(6, builder.build())
 
-            val intenter = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-            intenter.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intenter)
+
+
+
 
 
 
@@ -89,12 +81,23 @@ class VoiceRecognitionService : Service(), SpeechObserver {
         openGoogleAssistantFragment()
     }
 
+    @SuppressLint("MissingPermission", "InflateParams")
     private fun openGoogleAssistantFragment() {
-        Log.d("AIDAASSISTANT", "MostrandoFragmento de Asistente")
-        val intent = Intent(applicationContext, DummyActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        intent.putExtra("fragment_data", "hola")
-        startActivity(intent)
+        Log.d("AIDAASSISTANT", "Mostrando WindowManager del Asistente")
+
+        val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val layoutParams = WindowManager.LayoutParams(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+            PixelFormat.TRANSLUCENT
+        )
+
+        val view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_layout, null)
+        windowManager.addView(view, layoutParams)
+
+
     }
 
 }
