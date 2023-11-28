@@ -8,5 +8,6 @@
     </dimen>
     <dimen name="max_radius">40dp</dimen>
     <dimen name="min_radius">15dp</dimen>
+    <dimen name="target_height">250dp</dimen>
 
 </resources>

@@ -73,8 +73,8 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    aaptOptions {
-        noCompress "tflite"
+    androidResources {
+        noCompress 'tflite'
     }
 }
 

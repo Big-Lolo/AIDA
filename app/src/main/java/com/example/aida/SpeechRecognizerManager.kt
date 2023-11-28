@@ -1,7 +1,6 @@
 package com.example.aida
 
 import android.content.Context
-import android.content.Intent
 import android.content.res.AssetManager
 import android.os.Handler
 import android.os.Looper
@@ -56,9 +55,9 @@ class SpeechRecognizerManager(private val context: Context) : RecognitionListene
 
         recognizer?.addKeyphraseSearch(KWS_SEARCH, KEYPHRASE)
 
-        handler.postDelayed({
-            notifySpeechDetected()
-        }, 10000)
+
+
+
     }
 
     private fun copyAssetDirectory(assetManager: AssetManager, sourceDir: String, destinationDir: File) {
@@ -173,11 +172,12 @@ class SpeechRecognizerManager(private val context: Context) : RecognitionListene
         val result = hypothesis?.hypstr
         if (!result.isNullOrBlank()) {
             Log.d("SpeechRecognition", "EJECUTAR LA FUNCIÓN DE LO QUE SEA, palabra $result")
-            val intent = Intent("com.tuapp.OPEN_ASSISTANT")
-            intent.addCategory("android.intent.category.DEFAULT")
+            notifySpeechDetected()
 
+        }else{
+            recognizer?.startListening(KWS_SEARCH)
         }
-        recognizer?.startListening(KWS_SEARCH)
+
     }
 
     override fun onError(e: Exception?) {
