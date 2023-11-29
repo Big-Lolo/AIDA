@@ -26,7 +26,6 @@ import com.chaquo.python.android.AndroidPlatform
 import com.example.aida.DataBase.Database
 import com.example.aida.DataBase.Message
 import com.example.aida.DataBase.MessageDao
-import com.example.aida.conectivity2model.CallSystem
 import com.example.aida.conectivity2model.NetworkUtils
 import com.example.aida.serialization.WordsAndClasses
 import kotlinx.coroutines.Dispatchers
@@ -36,7 +35,7 @@ import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.common.FileUtil
 import java.util.Calendar
 import java.util.Date
-
+import kotlin.reflect.KFunction
 
 
 typealias SpeechRecognitionCallback = (String) -> Unit
@@ -252,10 +251,9 @@ class chat : Fragment(), OnInitListener  {
 
                             val argumento1 = context
                             val argumento2 = texto
-                            val instancia = CallSystem
                             if (functionallamar != null) {
                                 if (argumento1 != null) {
-                                    context?.let { instancia.interpretActionCall(argumento1, argumento2) }
+                                    functionExecuter(functionallamar, argumento1, argumento2)
                                 }
                             }
 
@@ -348,7 +346,26 @@ class chat : Fragment(), OnInitListener  {
         textToSpeech.speak(texto, TextToSpeech.QUEUE_FLUSH, null, null)
     }
 
+    private fun functionExecuter(functionName: String, vararg args: Any){
+        try {
+            val functionsContainer = FunctionsContainer()
 
+            // Obtener la referencia a la función mediante reflexión
+            val function = FunctionsContainer::class.members
+                .filterIsInstance<KFunction<*>>()
+                .firstOrNull { it.name == functionName }
+
+            // Verificar si se encontró la función
+            if (function != null) {
+                // Llamar a la función
+                function.call(functionsContainer, *args)
+            } else {
+                println("La función $functionName no fue encontrada")
+            }
+        } catch (e: Exception) {
+            println("Error al ejecutar la función $functionName: ${e.message}")
+        }
+    }
 
 }
 
