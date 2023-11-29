@@ -5,26 +5,29 @@ import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.PixelFormat
+import android.media.MediaPlayer
+import android.media.audiofx.Visualizer
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.os.SystemClock
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
+import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.AnimationUtils
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
@@ -40,7 +43,8 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
     private lateinit var textToSpeech: TextToSpeech
     private lateinit var predicer: WordsAndClasses
     private lateinit var modelInterpreter: Interpreter
-
+    private var visualizer: Visualizer? = null
+    private lateinit var contextoService:Context
 
     interface SpeechRecognitionCallback {
         fun onTextRecognized(text: String)
@@ -60,15 +64,16 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
         predicer = WordsAndClasses(modelInterpreter, this)
 
         super.onCreate()
-        //startForeground(5, createNotification())
+        startForeground(5, createNotification())
         speechRecognizerManager = SpeechRecognizerManager(this)
         speechRecognizerManager.setSpeechObserver(this)
         speechRecognizerManager.initialize()
         speechRecognizerManager.startListening()
+        contextoService = this
 
         Log.d("VoiceRecognitionService", "Iniciado el servicio.")
         handler.postDelayed({
-
+            this.openGoogleAssistantFragment()
 
 
 
@@ -85,19 +90,19 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
         val channelId = "AssistantAida"
         val channelName = "My Channel"
 
-        val notificationIntent = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,
-            PendingIntent.FLAG_IMMUTABLE)
+        //val notificationIntent = Intent(this, MainActivity::class.java)
+        //val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,
+          //  PendingIntent.FLAG_IMMUTABLE)
 
         val notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle("Assistant Service")
             .setContentText("Iniciado el servicio de Asiséncia de Aida.")
             .setSmallIcon(R.drawable.logo)
-            .setContentIntent(pendingIntent)
+            //.setContentIntent(pendingIntent)
             .build()
 
         val channel =
-            NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT)
+            NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
 
@@ -111,7 +116,7 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
 
     private fun openGoogleAssistantFragment() {
         Log.d("AIDAASSISTANT", "Mostrando WindowManager del Asistente")
-
+        speechRecognizerManager.stopListening()
         val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val layoutParams = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
@@ -120,13 +125,42 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
             PixelFormat.TRANSLUCENT
         )
-
         view = LayoutInflater.from(this).inflate(R.layout.bottomsheetlayouter, null)
-        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
-        val animation = AnimationUtils.loadAnimation(this, R.anim.progress_animation)
-        progressBar.startAnimation(animation)
-
         val constraintLayout = view.findViewById<ConstraintLayout>(R.id.linearLayout2)
+        val rootView = view.findViewById<ClickableConstraintLayout>(R.id.granContainer)
+
+        rootView.setOnClickListener { view ->
+            val x = view.x.toInt()
+            val y = view.y.toInt()
+
+            val location = IntArray(2)
+            constraintLayout.getLocationOnScreen(location)
+            val left = location[0]
+            val top = location[1]
+            val right = left + constraintLayout.width
+            val bottom = top + constraintLayout.height
+
+            val event = MotionEvent.obtain(
+                SystemClock.uptimeMillis(),
+                SystemClock.uptimeMillis(),
+                MotionEvent.ACTION_UP,
+                x.toFloat(),
+                y.toFloat(),
+                0
+            )
+
+            if (event.action == MotionEvent.ACTION_UP && (x < left || x > right || y < top || y > bottom)) {
+                windowManager.removeView(view)
+                speechRecognizerManager.setSpeechObserver(this)
+                speechRecognizerManager.startListening()
+                true
+            } else {
+                false
+            }
+        }
+
+
+
 
         // Configuración de la animación
         val animator = ValueAnimator.ofInt(0, resources.getDimensionPixelSize(R.dimen.target_height))
@@ -164,6 +198,11 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
                 if (functions != null) {
                     functionExecuter(functions)
                 }
+                speechRecognizerManager = SpeechRecognizerManager(contextoService)
+                speechRecognizerManager.initialize()
+                speechRecognizerManager.startListening()
+
+
 
             }
         })
@@ -180,7 +219,49 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
 
         speechRecognizer.setRecognitionListener(object : RecognitionListener {
             override fun onReadyForSpeech(params: Bundle?) {
-                println("Listo para grabar")
+                val mediaPlayer = MediaPlayer()
+                val audioSessionId = mediaPlayer.audioSessionId
+                val visualizerBar = view.findViewById<View>(R.id.visualizer_bar)
+                val handler = Handler(Looper.getMainLooper())
+                if (visualizer == null) {
+                    visualizer = Visualizer(audioSessionId)
+
+
+                    // Configurar el tamaño del buffer para la captura de audio
+                    visualizer?.setCaptureSize(Visualizer.getCaptureSizeRange()[1])
+
+                    // Configurar el listener para recibir los datos de audio
+                    visualizer?.setDataCaptureListener(object : Visualizer.OnDataCaptureListener {
+                        override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
+                            // Aquí puedes procesar los datos de audio y actualizar la barra
+                            // La variable waveform contiene los datos de audio en formato PCM
+
+                            // Calcular el nivel de amplitud promedio del audio
+                            val amplitude = waveform?.average()?.toInt() ?: 0
+
+                            // Calcular el ancho de la barra en función del nivel de amplitud
+                            val barWidth = amplitude * visualizerBar.width / 32768
+
+                            // Actualizar el ancho y el color de la barra
+                            handler.post {
+                                // Actualizar el tamaño y el color de la barra según la amplitud
+                                val layoutParams = visualizerBar.layoutParams
+                                layoutParams.width = amplitude
+                                visualizerBar.layoutParams = layoutParams
+
+                                val color = getColorForAmplitude(amplitude)
+                                visualizerBar.setBackgroundColor(color)
+                            }
+                        }
+
+                        override fun onFftDataCapture(visualizer: Visualizer?, fft: ByteArray?, samplingRate: Int) {
+                            // Este método no es necesario para este caso, pero se debe implementar
+                        }
+                    }, Visualizer.getMaxCaptureRate() / 2, true, false)
+
+                    // Habilitar la captura de audio
+                    visualizer?.enabled = true
+                }
             }
 
             override fun onBeginningOfSpeech() {
@@ -244,6 +325,19 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
         }
     }
 
+    fun getColorForAmplitude(amplitude: Int): Int {
+        // Definir los umbrales de amplitud para cada color
+        val redThreshold = 100
+        val yellowThreshold = 50
+
+        // Determinar el color según la amplitud
+        return when {
+            amplitude >= redThreshold -> Color.RED
+            amplitude >= yellowThreshold -> Color.YELLOW
+            else -> Color.GREEN
+        }
+    }
+
     override fun onInit(status: Int) {
 
     }
@@ -254,5 +348,27 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
 
 
 
+class ClickableConstraintLayout(context: Context, attrs: AttributeSet) : ConstraintLayout(context, attrs) {
 
+    override fun performClick(): Boolean {
+        super.performClick()
+        return true
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_UP) {
+            val x = event.x.toInt()
+            val y = event.y.toInt()
+
+            if (x < 0 || x > width || y < 0 || y > height) {
+                // Cerrar la ventana aquí
+                val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+                windowManager.removeView(this)
+                return true
+            }
+        }
+
+        return super.onTouchEvent(event)
+    }
+}
 

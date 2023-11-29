@@ -30,6 +30,7 @@ class SpeechRecognizerManager(private val context: Context) : RecognitionListene
     private fun notifySpeechDetected() {
         speechObserver?.onSpeechDetected()
     }
+    @Synchronized
     fun initialize() {
         Log.d("DEBUG", "Iniciando el método initialize")
 
@@ -54,8 +55,6 @@ class SpeechRecognizerManager(private val context: Context) : RecognitionListene
         val keywordFile = File(assetDir, "hey_aida.jsgf")
 
         recognizer?.addKeyphraseSearch(KWS_SEARCH, KEYPHRASE)
-
-
 
 
     }
@@ -140,16 +139,21 @@ class SpeechRecognizerManager(private val context: Context) : RecognitionListene
             destinationPath
         }
     }
+    @Synchronized
     fun startListening() {
         recognizer?.startListening(KWS_SEARCH)
-    }
+        Log.d("speechRecognizer", "señal de START ENVIADA")
 
+    }
+    @Synchronized
     fun stopListening() {
         recognizer?.stop()
+        Log.d("speechRecognizer", "señal de stop enviada")
     }
 
     override fun onBeginningOfSpeech() {
-        Log.d("onBeginningOfSpeech", "Starting")
+
+        Log.d("onBeginningOfSpeechRECOG", "Startinger ")
     }
 
     override fun onEndOfSpeech() {
@@ -157,7 +161,6 @@ class SpeechRecognizerManager(private val context: Context) : RecognitionListene
     }
 
     override fun onPartialResult(hypothesis: Hypothesis?) {
-        // Se llama cuando hay un resultado parcial disponible
         val result = hypothesis?.hypstr
         if (!result.isNullOrBlank()) {
             if (result == KEYPHRASE) {
@@ -175,7 +178,7 @@ class SpeechRecognizerManager(private val context: Context) : RecognitionListene
             notifySpeechDetected()
 
         }else{
-            recognizer?.startListening(KWS_SEARCH)
+            //recognizer?.startListening(KWS_SEARCH)
         }
 
     }

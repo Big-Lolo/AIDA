@@ -39,13 +39,6 @@ class MainActivity : AppCompatActivity(), Home.OnHomeInteractionListener {
         setContentView(binding.root)
         replaceFragment(Home())
 
-        speechRecognizerManager = SpeechRecognizerManager(this)
-        speechRecognizerManager.initialize()
-        speechRecognizerManager.startListening()
-
-
-
-
 
         binding.bottomNavigationView.setOnItemSelectedListener {
 
