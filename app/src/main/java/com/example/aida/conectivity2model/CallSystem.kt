@@ -13,12 +13,25 @@ import android.telecom.TelecomManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.aida.chat
+import org.apache.commons.lang3.StringUtils
 import java.util.regex.Pattern
 
-
+interface ChatListenerr {
+    fun sendMessage(message: String)
+}
 class CallSystem {
     companion object{
-    private fun llamarNumero(context: Context, numero: String, altavoz: Boolean, bluetooth: Boolean) {
+        private var chatListener: ChatListenerr? = null
+        fun setChatListener(listener: ChatListenerr) {
+            chatListener = listener
+        }
+        fun sendMessageToUser(message: String) {
+            // Enviar el mensaje al chat del usuario a través del fragmento
+            val fragment = chat.getInstance()
+            fragment.sendMessage(message)
+        }
+        private fun llamarNumero(context: Context, numero: String, altavoz: Boolean, bluetooth: Boolean) {
         val intent = Intent(Intent.ACTION_CALL)
         intent.data = Uri.parse("tel:$numero")
 
@@ -59,35 +72,52 @@ class CallSystem {
         val contactList = getContactList(context)
         var phoneNumber: String? = null
         var bestMatch: String? = null
-        var bestMatchDistance = Int.MAX_VALUE
+        var bestMatchSimilarity = 0.0
 
         val palabras = oracion.split(" ")
 
         for (palabra in palabras) {
             for ((name, number) in contactList) {
-                val nameWords = name.split(" ")
-                for (nameWord in nameWords) {
-                    val distance = levenshteinDistance(nameWord.lowercase(), palabra.lowercase())
-                    if (distance == 0) {
-                        // Si encuentra una coincidencia exacta, devuelve el número de teléfono inmediatamente
-                        phoneNumber = number
-                        return phoneNumber
-                    } else if (distance < bestMatchDistance) {
+                val normalizedName = normalizeString(name)
+                val normalizedPalabra = normalizeString(palabra)
+
+                // Calcular la similitud utilizando un algoritmo avanzado (por ejemplo, Jaro-Winkler)
+                val similarity = calculateSimilarity(normalizedName, normalizedPalabra)
+
+                if (similarity >= 0.8) {
+                    // Si la similitud supera el umbral, actualiza la mejor coincidencia
+                    if (similarity > bestMatchSimilarity) {
                         bestMatch = name
-                        bestMatchDistance = distance
+                        bestMatchSimilarity = similarity
                         phoneNumber = number
                     }
                 }
             }
         }
+        Log.d("telContact", "El telefono del contacto es $phoneNumber")
+        return phoneNumber
+    }
 
-        // Devuelve el número de teléfono de la mejor coincidencia encontrada
-        if (bestMatch != null) {
-            return phoneNumber
+        fun calculateSimilarity(text1: String, text2: String): Double {
+            val similarity = StringUtils.getJaroWinklerDistance(text1, text2)
+            return similarity
         }
 
-        return null
-    }
+        fun normalizeString(text: String): String {
+            // Convertir a minúsculas
+            val normalizedText = text.lowercase()
+
+            // Eliminar caracteres especiales y espacios adicionales
+            val pattern = Pattern.compile("[^a-z0-9 ]")
+            val matcher = pattern.matcher(normalizedText)
+            val cleanedText = matcher.replaceAll("").trim()
+
+            return cleanedText
+        }
+
+
+
+
         private fun levenshteinDistance(s: String, t: String): Int {
             val m = s.length
             val n = t.length
@@ -143,8 +173,11 @@ class CallSystem {
         }
 
 
-        fun interpretActionCall(context: Context, oracion: String) {
+        fun interpretActionCall(context: Context, txt: String) {
+
             Log.d("LLAMANDO", "REALIZANDO LLAMADAA")
+            val oracion:String = convertirTextoANumeros(txt)
+            Log.d("TEL_RESPUESTA", "El tel es: $oracion")
             // Expresión regular para extraer números de teléfono
             val regexTelefono = "\\d{9,}"
 
@@ -166,14 +199,15 @@ class CallSystem {
             if (matcherTelefono.find()) {
                 numeroTelefono = matcherTelefono.group()
                 Log.d("CALLSYSTEM", "B $numeroTelefono")
-
-
-
             } else {
-                // Si no se encuentra un número, buscar contacto por nombre
-                    // Usar la función buscarContactoPorNombre para obtener el número de teléfono
-                    numeroTelefono = buscarContactoPorOracion(context, oracion)
+                numeroTelefono = buscarContactoPorOracion(context, oracion)
 
+                if(numeroTelefono != null) {
+                    numeroTelefono = convertirTextoANumeros(numeroTelefono)
+                }else{
+                    sendMessageToUser("Lo siento, no pude encontrar a ese contacto en tu agenda")
+                    return
+                }
             }
 
             // Verificar si se activa el altavoz
@@ -184,9 +218,64 @@ class CallSystem {
             val matcherBluetooth = patternBluetooth.matcher(oracion)
             activarBluetooth = matcherBluetooth.find()
 
-            llamarNumero(context = context, numero = numeroTelefono.toString(), altavoz = activarAltavoz, bluetooth = activarBluetooth)
+            Log.d("Tel2call", "TELEFONO: ${numeroTelefono.toString()}")
 
+            if (numeroTelefono == null) {
+                // Notificar al usuario con un mensaje de que no se encontró el número
+                sendMessageToUser("Lo siento, no pude encontrar ese número")
+            } else {
+                llamarNumero(
+                    context = context,
+                    numero = numeroTelefono.toString(),
+                    altavoz = activarAltavoz,
+                    bluetooth = activarBluetooth
+                )
+            }
+        }
 
+        // Función para convertir texto en números
+        fun convertirTextoANumeros(texto: String?): String {
+            val numeros: Map<String, String> = mapOf(
+                "cero" to "0",
+                "uno" to "1",
+                "dos" to "2",
+                "tres" to "3",
+                "cuatro" to "4",
+                "cinco" to "5",
+                "seis" to "6",
+                "siete" to "7",
+                "ocho" to "8",
+                "nueve" to "9"
+                // Agrega más palabras y números según sea necesario
+            )
+
+            var numeroConvertido = texto
+
+            // Encontrar números escritos en palabras
+            val pattern = Pattern.compile("\\b(?:${numeros.keys.joinToString("|")})\\b")
+            val matcher = pattern.matcher(numeroConvertido)
+
+            while (matcher.find()) {
+                val palabraNumero = matcher.group()
+                val numeroReemplazo = numeros[palabraNumero.toLowerCase()]
+                numeroConvertido = numeroConvertido?.replace("\\b$palabraNumero\\b".toRegex(), numeroReemplazo ?: "")
+            }
+
+            // Encontrar números y palabras
+            val numerosEncontrados = "\\b\\d+\\b".toRegex().findAll(numeroConvertido ?: "")
+                .map { it.value }
+                .toList()
+
+            val palabrasEncontradas = "\\b\\D+\\b".toRegex().findAll(numeroConvertido ?: "")
+                .map { it.value }
+                .toList()
+
+            // Juntar números y palabras
+            val numerosJuntos = numerosEncontrados.joinToString("")
+            val palabrasJuntas = palabrasEncontradas.joinToString(" ")
+
+            // Concatenar números y palabras
+            return "$palabrasJuntas $numerosJuntos"
         }
 
 

@@ -1,8 +1,11 @@
 package com.example.aida
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -26,7 +29,8 @@ import com.chaquo.python.android.AndroidPlatform
 import com.example.aida.DataBase.Database
 import com.example.aida.DataBase.Message
 import com.example.aida.DataBase.MessageDao
-import com.example.aida.conectivity2model.NetworkUtils
+import com.example.aida.conectivity2model.CallSystem
+import com.example.aida.conectivity2model.ChatListenerr
 import com.example.aida.serialization.WordsAndClasses
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,13 +49,9 @@ typealias SpeechRecognitionCallback = (String) -> Unit
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
+private lateinit var speechRecognizerManager: SpeechRecognizerManager
 
-/**
- * A simple [Fragment] subclass.
- * Use the [chat.newInstance] factory method to
- * create an instance of this fragment.
- */
-class chat : Fragment(), OnInitListener  {
+class chat : Fragment(), OnInitListener, ChatListenerr {
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -64,17 +64,54 @@ class chat : Fragment(), OnInitListener  {
     private lateinit var modelInterpreter: Interpreter
     private lateinit var predicer: WordsAndClasses
     private lateinit var textToSpeech: TextToSpeech
+    private var voiceRecognitionService: VoiceRecognitionService? = null
+    private var isServiceBound = false
 
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            // Obtener la instancia del servicio a través del Binder personalizado
+            val binder = service as VoiceRecognitionService.VoiceRecognitionBinder
+            voiceRecognitionService = binder.getService()
+            // Establecer el estado de conexión al servicio como verdadero
+            isServiceBound = true
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            // Establecer el estado de conexión al servicio como falso
+            isServiceBound = false
+        }
+    }
+    companion object {
+        private var instance: chat? = null
+
+        fun getInstance(): chat {
+            return instance ?: throw IllegalStateException("ChatFragment not initialized")
+        }
+    }
+    override fun onResume() {
+        super.onResume()
+        val serviceIntent = Intent(requireContext(), VoiceRecognitionService::class.java)
+        requireContext().bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
+    }
+    override fun onPause() {
+        super.onPause()
+        if (isServiceBound) {
+            requireContext().unbindService(serviceConnection)
+            isServiceBound = false
+        }
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        speechRecognizerManager = SpeechRecognizerManager(requireContext())
         //context?.deleteDatabase("message_list") para borrar database
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
 
         }
+
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 modelInterpreter = Interpreter(FileUtil.loadMappedFile(requireContext(), "chatbot_model_lite.tflite"))
@@ -105,10 +142,12 @@ class chat : Fragment(), OnInitListener  {
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_chat, container, false)
         textToSpeech = TextToSpeech(requireContext(), this)
-
+        CallSystem.setChatListener(this)
+        instance = this
         if (! Python.isStarted()) {
             Python.start(AndroidPlatform(requireContext()));
         }
+
         val ElBoton2 = view?.findViewById<Button>(R.id.btn_send)
         val text2 = view?.findViewById<EditText>(R.id.et_message)
         text2?.addTextChangedListener(object : TextWatcher {
@@ -129,32 +168,10 @@ class chat : Fragment(), OnInitListener  {
         return rootView
     }
 
-    fun ejecutarFuncion(nombreFuncion: String, vararg argumentos: Any, contexte: Context) {
-        val instancia = NetworkUtils(contexte)
-        val funcion = instancia::class.java.getDeclaredMethod(nombreFuncion, *argumentos.map { it::class.java }.toTypedArray())
-        funcion.invoke(instancia, *argumentos)
-    }
 
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment chat.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            chat().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
+
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -167,6 +184,7 @@ class chat : Fragment(), OnInitListener  {
         recyclerView = view.findViewById<RecyclerView>(R.id.rv_messages)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = adapter
+
 
 
         text?.addTextChangedListener(object : TextWatcher {
@@ -194,8 +212,10 @@ class chat : Fragment(), OnInitListener  {
 
         if (btnSend != null) {
             if (btnSend.text == "Microfono") {
+                voiceRecognitionService?.pauseRecognition()
                 println("Enviada señal del speech")
                 startSpeechToText { voiceText ->
+                    voiceRecognitionService?.resumeRecognition()
                     lifecycleScope.launch {
                         withContext(Dispatchers.IO) {
                             messageDao.insert(Message(
@@ -209,6 +229,13 @@ class chat : Fragment(), OnInitListener  {
                             val result = predicer.responseClass(voiceText.toString())
                             val respuesta = result.first
                             val functions = result.second
+                            if (functions != null) {
+                                context?.let {
+                                    if (text != null) {
+                                        functionExecuter(functions, it, voiceText.toString())
+                                    }
+                                }
+                            }
                             messageDao.insert(Message(0, respuesta, false, Date().time.toLong(), false))
                             val msg = messageDao.getAll()
                             messagechat = msg
@@ -244,18 +271,16 @@ class chat : Fragment(), OnInitListener  {
                             Log.d("Text2predice", "eefe ${texto}")
                             val result = predicer.responseClass(texto)
                             val respuesta = result.first
-                            val functionallamar = result.second?.toString()
-                            val clasefuncionName = result.third?.toString()
-                            Log.d("FuncionBOT", "LA FUNCION ES $functionallamar")
-                            Log.d("FuncionBOT", "LA CLASE ES $clasefuncionName")
-
-                            val argumento1 = context
-                            val argumento2 = texto
-                            if (functionallamar != null) {
-                                if (argumento1 != null) {
-                                    functionExecuter(functionallamar, argumento1, argumento2)
+                            val functions = result.second
+                            if (functions != null) {
+                                context?.let {
+                                    if (text != null) {
+                                        functionExecuter(functions, it, texto.toString())
+                                    }
                                 }
                             }
+
+
 
                             messageDao.insert(Message(0, respuesta, false, Date().time.toLong(), false))
                             val msg = messageDao.getAll()
@@ -338,6 +363,7 @@ class chat : Fragment(), OnInitListener  {
             textToSpeech.stop()
             textToSpeech.shutdown()
         }
+        instance = null
         super.onDestroyView()
     }
 
@@ -367,6 +393,29 @@ class chat : Fragment(), OnInitListener  {
         }
     }
 
+
+    override fun sendMessage(message: String) {
+        // Mostrar el mensaje en el chat
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                messageDao.insert(Message(
+                    0,
+                    (message),
+                    false,
+                    Date().time.toLong(),
+                    false
+                )
+                )
+                val msg = messageDao.getAll()
+                messagechat = msg
+            }
+            withContext(Dispatchers.Main) {
+                adapter.updateData(messagechat)
+                adapter.notifyDataSetChanged()
+                recyclerView.smoothScrollToPosition(messagechat.size - 1)
+            }
+        }
+    }
 }
 
 

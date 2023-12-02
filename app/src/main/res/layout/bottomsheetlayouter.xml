@@ -15,13 +15,13 @@
         android:layout_height="200dp"
         android:background="@drawable/chat_rounded_corner"
         android:backgroundTint="@color/white"
+        android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        android:clickable="true">
+        app:layout_constraintVertical_bias="1.0">
 
 
         <ImageView
@@ -36,24 +36,45 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <View
-            android:id="@+id/visualizer_bar"
-            android:layout_width="match_parent"
-            android:layout_height="11dp"
-            android:layout_marginTop="152dp"
-            android:background="@drawable/visualizer_bar_background"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteX="16dp" />
 
         <TextView
             android:id="@+id/textView9"
             android:layout_width="match_parent"
             android:layout_height="28dp"
-            android:layout_marginTop="96dp"
+            android:layout_marginTop="84dp"
             android:text="¿En que te puedo ayudar hoy?"
             android:textAlignment="center"
             app:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteX="16dp" />
+            tools:layout_editor_absoluteX="0dp" />
+
+        <EditText
+            android:id="@+id/et_messagess"
+            android:layout_width="280dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="128dp"
+            android:layout_weight=".5"
+            android:background="@drawable/round_button"
+            android:backgroundTint="@color/graybot"
+            android:hint="Type a message..."
+            android:inputType="textShortMessage"
+            android:padding="10dp"
+            android:singleLine="true"
+            app:layout_constraintEnd_toStartOf="@+id/btn_sendss"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btn_sendss"
+            android:layout_width="87dp"
+            android:layout_height="38dp"
+            android:layout_marginTop="128dp"
+            android:layout_weight="1"
+            android:background="@drawable/round_button"
+            android:backgroundTint="#26A69A"
+            android:text="Microfono"
+            android:textColor="@android:color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

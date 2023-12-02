@@ -92,8 +92,7 @@
     {"tag":"llamada",  
     "patterns":["Llama a manolo y activa el manos libres", "Llama a jesus y activa el altavoz", "Haz una llamada a jose y pon el altavoz que estoy sordo", "llama al 616235463 y pon el altavoz","Inicia una llamada a Ana y pon el altavoz, por favor", "Llama al 123456789 en manos libres, por favor", "Llama a papá y asegúrate de poner el altavoz", "Haz una llamada a Juan y pon el altavoz, estoy en el coche", "Llama al contacto de emergencia y activa el altavoz", "Llama a Laura y pon el altavoz para que todos escuchen", "Marcar al 987654321 en altavoz", "Realiza una llamada a Pedro y pon el manos libres", "Llama a Isabel y asegúrate de poner el altavoz", "Haz una llamada al contacto de trabajo y activa el manos libres", "Marcar al 555123456 con altavoz", "Llama a Sandra y activa el manos libres, por favor", "Iniciar una llamada a Carlos y poner el altavoz", "Llama a Antonio y pon el manos libres, estoy ocupado", "Llama al número de emergencia y activa el altavoz", "Haz una llamada a María y asegúrate de poner el manos libres", "Llama a Daniel y pon el altavoz, por favor", "Realizar una llamada a Laura y activar el manos libres", "Marcar al 111222333 con manos libres", "Llama a Jorge y asegúrate de poner el manos libres", "Llama al 456789123 en manos libres, por favor", "Iniciar una llamada a Marta y poner el altavoz", "Llama a Adrián y activa el manos libres, estoy en la calle", "Marcar al contacto de emergencia con altavoz", "Llama a Raquel y asegúrate de poner el altavoz", "Haz una llamada a Laura y pon el altavoz, estoy en una reunión" , "Llama a mama y activa el manos libres que estoy conduciendo", "Llama a Manuel y activame el altavoz"],
     "responses":["De acuerdo!", "Entendido!"],
-    "function":"callerInterpreter",
-        "classes": "com.example.aida.conectivity2model.CallSystem"
+    "function":"callerInterpreter"
     },
 
     {"tag":"solicitud_mensaje_whatsapp",  
@@ -115,7 +114,34 @@
     "patterns":["Mándale un audio a Raul", "Mandale un audio a Cristina", "manda un audio a jorge", "envia un audio a Sebastian", "Grábale un mensaje de voz a Laura", "Mándale una nota de voz a Marcos", "Manda un audio a Carolina", "Envía un mensaje de voz a Pablo", "Grábale un mensaje de voz a Martina", "Mándale una nota de voz a Andrés", "Manda un audio a Sofía", "Envía un mensaje de voz a Juan", "Grábale un mensaje de voz a Isabel", "Mándale una nota de voz a Felipe", "Manda un audio a Valentina", "Envía un mensaje de voz a Diego", "Grábale un mensaje de voz a Lucía", "Mándale una nota de voz a Sergio", "Manda un audio a Natalia", "Envía un mensaje de voz a Daniel", "Crear nuevo audio de voz para Matias", "Enviar nota de voz para Julia", "Audio de whatsapp para Esteban", "Audio para Meritxell", "Crea un audio para Ana", "Crea nueva nota de voz para Franklin", "Puedes enviarle un audio ahora a raul?", "Puedes enviar un audio a Jose?", "Necesito que le envies un audio a Sam", "Respondele con un audio a Jordi", "Responde al mensaje con un audio de whatsapp para Eloi", "Responde con una nota de voz para Emilio", "Responde pablo con un audio", "Responde a Javier con un audio de whatsapp", "Crea una respuesta para Santiago con un audio de whatsapp"],
     "responses":["Entiendo, Buscando a contacto", "De acuerdo, Busco a contacto", "Entendido!, Voy a buscar el chat", "Vale, voy a buscar el chat del contacto", "Entendi, me pongo a buscar al contacto", "Perfecto, busco el chat del contacto", "Claro, voy a buscar el chat", "Listo, buscaré el chat del contacto", "De acuerdo, estoy buscando el chat", "Entendido, buscaré el chat del contacto", "Voy a buscar el chat, un momento", "Está bien, busco el chat del contacto", "De acuerdo, buscaré el chat ahora", "Entiendo, buscaré el chat del contacto", "Vale, buscaré el chat, dame un segundo", "Está bien, estoy buscando el chat", "Claro, buscaré el chat del contacto", "De acuerdo, buscaré el chat de inmediato", "Entendido, buscaré el chat ahora mismo", "Voy a buscar el chat, por favor espera", "De acuerdo, estoy en proceso de búsqueda del chat"],
     "function":"create_audio_whatsapp"
+    },
+
+    {"tag":"linterna",  
+    "patterns":["Enciende la linterna", "Apaga la linterna", "Necesito mas luz, enciendeme la linterna", "Iluminame y enciende la linterna", "Necesito que me enciendas la linterna del dispositivo", "Encender linterna", "Enciendeme la linterna", "Activame la linterna", "No veo muy bien por aqui, podrias encenderme la linterna", "Que oscuro es5ta esto, enciendeme la linterna", "Ya no necesito mas luz, apaga la linterna", "Requiero que apagues la linterna", "Me puedes apagar la linterna porfavor", "Necesitaria que me apagaras la linterna", "Ya hay bastante luz, apaga la linterna", "Me quedo sin bateria, apagame la linterna", "Apaga el flash", "Enciende el flash", "Necesito que me apagues la luz que sale del dispositivo", "Hazme un favor y apagame la linterna porfavor"],
+    "responses":["De acuerdo, me pongo a ello", "Entendido, enseguida", "Un placer, me pongo a ello", "Entendí, enseguida lo hago", "Un momento por favor que he perdido donde estaba la linterna", "Dejame ver. ¡Aqui esta el boton!", "Desde luego, no pidas mas"],
+    "function":"linternaInterpreter"
+    },
+    {"tag":"power_control",  
+    "patterns":["Apagame el dispositivo", "Enciendeme el dispositivo", "Enciende el dispositivo", "Necesito que apagues el dispositivo", "El dispositivo me va muy mal, podrias reiniciarmelo", "Necesito que entres en modo reinicio", "Activa el modo reinicio", "Apagame la pantalla del dispositivo", "Suspendeme la pantalla del dispositivo", "Cierra la pantalla", "Apaga la pantalla", "Desactivame la pantalla", "Deshabilita la pantalla", "Apaga el dispositivo", "Apaga todo el dispositivo"],
+    "responses":["De acuerdo, me pongo a ello", "Entendido, enseguida", "Un placer, me pongo a ello", "Entendí, enseguida lo hago", "Un momento por favor que he perdido donde estaba la linterna", "Dejame ver. ¡Aqui esta el boton!", "Desde luego, no pidas mas"],
+    "function":"powerControlInterpreter"
+    },
+    {"tag":"conection_control",  
+    "patterns":["Enciende los datos móviles", "Enciende los datos", "Activa la conexion por datos moviles", "Desactivame la conexion por datos moviles", "Desactiva los datos moviles", "Deshabilita los datos moviles", "habilita los datos moviles", "No tengo wifi aqui, activame los datos moviles", "Necesito que me actives la conexion wifi", "Enciende la señal wifi", "Enciende el wifi", "Habilitame el wifi", "Conectate a la red wifi", "Habilita el wifi", "Activa el wifi", "Desactiva el wifi", "Desconecta el wifi", "Deshabilita el wifi", "Apaga el wifi", "Apagame la conexion wifi anda", "Me haces un favor y me apagas la conexion wifi", "Enciendeme el bluethooth", "Habilitame el bluethooth", "Activame el bluethooth", "Enciende la conexion bluethooth", "Necesito que me actives el manos libres", "Activa el bluethooth", "Enciende la conexion bluethooth", "Deshabilita la conexion bluethooth", "Desconecta la conexion bluethooth", "Desactiva la conexion bluethooth", "Inhibe la conexion bluethooth", "Desactiva el bluethooth", "Deshabilita el bluethooth"],
+    "responses":["De acuerdo enseguida lo hago", "Entendí, ahora me pongo a ello", "Vale!", "Claro!"],
+    "function":"interpreterDeConexiones"
+    },
+    {"tag":"volumen_dispositivo",  
+    "patterns":["Necesito que me subas el volumen", "Baja el volumen", "Silenciame el dispositivo", "Mutea el dispositivo", "Aumenta el volumen", "Sube 2 puntos de volumen", "Incrementa el volumen en un 20%", "Aumenta el volumen en un 50%", "Necesitaria que me bajaras el volumen", "Baja el volumen", "Baja 2 puntos de volumen", "Bajame el volumen de las llamadas un 20%", "Bajame el volumen de la multimedia un 10%", "Subeme el volumen de las alarmas un 30%", "Incrementa el volumen de las llamadas un 45%"],
+    "responses":[""],
+    "function":"volumenInterpreter"
+    },
+    {"tag":"brillo_pantalla",  
+    "patterns":["Sube el brillo", "Incrementa el brillo", "Aumenta la intensidad de brillo de la pantalla", "Sube el brillo de la pantalla", "Necesito que subas un 30% el brillo de la pantalla", "Podrias dame mas brillo a la pantalla porfavor", "Necesito que aumentes el brillo de la pantalla", "Hechame un favor y baja el brillo de la pantalla", "Mis ojos, mucha luz, bajame el brillo de la pantalla corre", "Me queman los ojos, baja el brillo de la pantalla", "Requiero que me bajes el brillo de la pantalla anda"],
+    "responses":["De acuerdo, enseguida", "De acuerdo", "Claro!", "Enseguida", "Me pongo", "Ahora lo hago"],
+    "function":"brilloInterpreter"
     }
+    
 ]
 
 }

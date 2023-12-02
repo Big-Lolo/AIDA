@@ -6,6 +6,8 @@
         android:name="android.hardware.telephony"
         android:required="false" />
 
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
@@ -31,6 +33,13 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE"
         tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.REBOOT"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.SHUTDOWN"
+        tools:ignore="ProtectedPermissions" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera.flash" />
 
 
 
@@ -135,6 +144,16 @@
             android:exported="true">
             <intent-filter android:priority="1000">
                 <action android:name="ABRIR_NOTI" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".PowerOffReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.example.aida.ACTION_POWER_OFF" />
+                <action android:name="com.example.aida.ACTION_RESTART_IT" />
             </intent-filter>
         </receiver>
 
