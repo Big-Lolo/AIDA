@@ -1,42 +1,60 @@
 package com.example.aida
 import android.accessibilityservice.AccessibilityService
-import android.app.Notification
-import android.app.PendingIntent
 import android.util.Log
+import android.view.GestureDetector
+import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityNodeInfo
 
 
-class Accesibility4Assistant(): AccessibilityService() {
 
+class Accesibility4Assistant : AccessibilityService() {
+    private val gestureDetector: GestureDetector by lazy {
+        GestureDetector(this, MyGestureListener())
+    }
+    private var tapCount = 0
+    private var lastTapTime: Long = 0
 
-        override fun onAccessibilityEvent(event: AccessibilityEvent) {
-            Log.d("ACCESIBILITYLOG", "AIXO S'ESTÀ EXECUTANT")
-            // Detectar el evento de la notificación específica
-            if (event.eventType == AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED) {
-                // Obtener la información de la notificación
-                val packageName = event.packageName
-                val tickerText = event.text[0]
-
-                // Verificar si es tu propia notificación
-                if (packageName != null && packageName == "com.example.aida" &&
-                    tickerText != null && tickerText == "Asistente AIDA") {
-                    // Abrir el fullScreenIntent de la notificación
-                    if (event.parcelableData != null && event.parcelableData is Notification) {
-                        val notification = event.parcelableData as Notification
-                        val fullScreenIntent = notification.fullScreenIntent
-                        try {
-                            fullScreenIntent.send()
-                        } catch (e: PendingIntent.CanceledException) {
-                            e.printStackTrace()
-                        }
-                    }
-                }
+    override fun onAccessibilityEvent(event: AccessibilityEvent) {
+        Log.d("ETIQUETA_ACCESIBILITY", "tag es ${event.eventType}")
+        if (event.eventType == AccessibilityEvent.TYPE_VIEW_CLICKED) {
+            val view = event.source
+            if (view != null && view.className == "android.widget.ImageButton" && view.contentDescription == "Botón Central") {
+                // Se detectó el clic en el botón central del Bottom Navigation Bar
+                // Realiza la acción deseada aquí, como abrir el asistente de AIDA
+                Log.d("assistantButton", "Abrir el asistente de AIDA")
             }
         }
+    }
 
-        override fun onInterrupt() {
-            // Método requerido pero no utilizado en este ejemplo
+
+    override fun onInterrupt() {
+        // Implementación opcional si se interrumpe el servicio de accesibilidad
+    }
+
+    private inner class MyGestureListener : GestureDetector.SimpleOnGestureListener() {
+        private var lastTapTime: Long = 0
+
+        override fun onDoubleTap(e: MotionEvent): Boolean {
+            val currentTime = System.currentTimeMillis()
+            val elapsedTime = currentTime - lastTapTime
+
+            if (elapsedTime < 500) {
+                // Se detectó una doble pulsación rápida
+                // Realizar la acción deseada aquí
+                // Por ejemplo, iniciar una llamada telefónica
+
+
+                //ABRIR EL ASISTENTE DE AIDA
+
+                // Reiniciar el contador de tiempo
+                lastTapTime = 0
+            } else {
+                // Es una doble pulsación, pero no es lo suficientemente rápida
+                lastTapTime = currentTime
+            }
+
+            return super.onDoubleTap(e)
         }
-
+    }
 }

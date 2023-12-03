@@ -1,18 +1,13 @@
 package com.example.aida.conectivity2model
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.ContactsContract
 import android.telecom.TelecomManager
 import android.util.Log
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.example.aida.chat
 import org.apache.commons.lang3.StringUtils
 import java.util.regex.Pattern
@@ -33,21 +28,16 @@ class CallSystem {
         }
         private fun llamarNumero(context: Context, numero: String, altavoz: Boolean, bluetooth: Boolean) {
         val intent = Intent(Intent.ACTION_CALL)
+
         intent.data = Uri.parse("tel:$numero")
 
-        // Verificar si se tiene el permiso para realizar la llamada
-        if (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.CALL_PHONE
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
             // Configurar el altavoz si es necesario
             if (altavoz) {
                 intent.putExtra(TelecomManager.EXTRA_START_CALL_WITH_SPEAKERPHONE, true)
             }
 
             // Configurar el Bluetooth si es necesario y es compatible
-            if (bluetooth && context.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
+            if (bluetooth ) {
                 val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
                 if (bluetoothAdapter != null && bluetoothAdapter.isEnabled) {
                     intent.putExtra("android.bluetooth.headset", true)
@@ -56,15 +46,9 @@ class CallSystem {
                 }
             }
 
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             context.startActivity(intent)
-        } else {
-            // Si no se tiene el permiso, solicitarlo al usuario
-            ActivityCompat.requestPermissions(
-                context as Activity,
-                arrayOf(Manifest.permission.CALL_PHONE),
-                1
-            )
-        }
+
     }
 
     @SuppressLint("Range")

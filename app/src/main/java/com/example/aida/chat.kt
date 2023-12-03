@@ -125,10 +125,11 @@ class chat : Fragment(), OnInitListener, ChatListenerr {
                 messageDao.archiveAll(cal.time)
                 messagechat = messageDao.getAll()
                 adapter.updateData(messagechat)
-                adapter.notifyDataSetChanged()
+                //adapter.notifyDataSetChanged()
             }
 
             withContext(Dispatchers.Main) {
+                adapter.notifyDataSetChanged() 
                 //recyclerView.smoothScrollToPosition(messagechat.size - 1)
             }
         }
@@ -249,7 +250,7 @@ class chat : Fragment(), OnInitListener, ChatListenerr {
                     }
 
                 }
-
+                voiceRecognitionService?.resumeRecognition()
 
                 }
             else {

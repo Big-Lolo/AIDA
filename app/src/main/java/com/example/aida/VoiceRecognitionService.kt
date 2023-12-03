@@ -39,6 +39,7 @@ import androidx.core.app.NotificationCompat
 import com.example.aida.serialization.WordsAndClasses
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.tensorflow.lite.Interpreter
@@ -75,13 +76,18 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
     }
     override fun pauseRecognition() {
         // Lógica para pausar el reconocimiento de voz
+        Log.d("pauseRecognition", "PAUSA, EL ESTADO ES  $isRecognitionPaused")
+
         isRecognitionPaused = true
+        Log.d("pauseRecognition", "PAUSA, EL ESTADO ES  $isRecognitionPaused")
+
         // Detener el reconocimiento de voz actual
         speechRecognizerManager.stopListening()
     }
 
     override fun resumeRecognition() {
         // Lógica para reanudar el reconocimiento de voz
+        Log.d("resumeRecognition", "El estado del paused es $isRecognitionPaused")
         isRecognitionPaused = false
         // Iniciar el reconocimiento de voz nuevamente si no está pausado
         if (!isRecognitionPaused) {
@@ -263,14 +269,11 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
                 //Obtener respuesta del procesamiento y dictarla
                 textToSpeech.speak(textoDeRespuesta, TextToSpeech.QUEUE_FLUSH, null, null)
                 if (functions != null) {
-                    functionExecuter(functions, this, textoDeRespuesta)
+                    functionExecuter(functions, this@VoiceRecognitionService , textoDeRespuesta)
                 }
                 speechRecognizerManager = SpeechRecognizerManager(contextoService)
                 speechRecognizerManager.initialize()
                 speechRecognizerManager.startListening()
-
-
-
             }
         })
     }
@@ -370,8 +373,8 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
 
 
     private fun action_button(){
-        val btnSend = view?.findViewById<Button>(R.id.btn_sendss)
-        val text = view?.findViewById<EditText>(R.id.et_messagess)
+        val btnSend = view.findViewById<Button>(R.id.btn_sendss)
+        val text = view.findViewById<EditText>(R.id.et_messagess)
 
         if (btnSend != null) {
             Log.d("texter", "btnsend diferente de null")
@@ -385,7 +388,7 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
                     var texto = text.text.toString()
                     Log.d("msg_saved", "el texto es ${text.text.toString()}")
                     //messagechat.add(MessageProps(text.text.toString(), true))
-                    serviceScope.launch {
+                    GlobalScope.launch {
                         withContext(Dispatchers.IO) {
                             /*messageDao.insert(
                                 Message(
@@ -396,16 +399,14 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
                                     false
                                 )
                             )*/
-                            Log.d("Text2predice", "eefe ${texto}")
-                            val result = predicer.responseClass(texto)
-                            Log.d("Text2predice", "resultado es ${result}")
 
+                            val result = predicer.responseClass(texto)
                             val respuesta = result.first
 
 
                             val functions = result.second
                             if (functions != null) {
-                                functionExecuter(functions, this, texto.toString())
+                                functionExecuter(functions, this@VoiceRecognitionService , texto.toString())
                             }
 
                             // Llamada a speak dentro de withContext para asegurar que respuesta tiene el valor correcto

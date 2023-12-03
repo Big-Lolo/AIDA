@@ -49,8 +49,9 @@
 
         <EditText
             android:id="@+id/et_messagess"
-            android:layout_width="280dp"
-            android:layout_height="40dp"
+            android:layout_width="281dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="128dp"
             android:layout_weight=".5"
             android:background="@drawable/round_button"
@@ -58,8 +59,8 @@
             android:hint="Type a message..."
             android:inputType="textShortMessage"
             android:padding="10dp"
+
             android:singleLine="true"
-            app:layout_constraintEnd_toStartOf="@+id/btn_sendss"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -67,13 +68,14 @@
             android:id="@+id/btn_sendss"
             android:layout_width="87dp"
             android:layout_height="38dp"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="128dp"
             android:layout_weight="1"
             android:background="@drawable/round_button"
             android:backgroundTint="#26A69A"
             android:text="Microfono"
             android:textColor="@android:color/white"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/et_messagess"
             app:layout_constraintTop_toTopOf="parent" />
 
 

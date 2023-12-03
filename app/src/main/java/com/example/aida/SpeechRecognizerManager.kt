@@ -48,7 +48,7 @@ class SpeechRecognizerManager(private val context: Context) : RecognitionListene
             .setDictionary(File(assetDir, "cmudict-en-us.dict"))
             .setRawLogDir(assetDir)
             .setKeywordThreshold(1.2e-5f)
-            .setSampleRate(16000)
+            .setSampleRate(8000) //antes 16000
             .recognizer
         recognizer?.addListener(this)
 

@@ -79,7 +79,6 @@
 
         <service
             android:name=".Accesibility4Assistant"
-            android:label="My Accessibility Service"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:exported="true">
             <intent-filter>
