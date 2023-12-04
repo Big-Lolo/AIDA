@@ -348,30 +348,6 @@ class AlarmFragment(private val submenu: Boolean = false) : Fragment(), OnItemCl
                 dayList = false
             }
 
-            Log.d("AlarmAcceptInfo", "El valor de nombre es: $nombre")
-            Log.d("AlarmAcceptInfo", "El valor de minuto es: $minute")
-            Log.d("AlarmAcceptInfo", "El valor de hour es: $hour")
-            Log.d("AlarmAcceptInfo", "El valor de year es: $year")
-            Log.d("AlarmAcceptInfo", "El valor de month es: $month")
-            Log.d("AlarmAcceptInfo", "El valor de day es: $day")
-            Log.d("AlarmAcceptInfo", "El valor de volumeAlarma es: $volumeAlarma")
-            Log.d("AlarmAcceptInfo", "El valor de selectedAlarmTone es: $selectedAlarmTone")
-            Log.d("AlarmAcceptInfo", "El valor de uriAlarm es: $uriAlarm")
-            Log.d("AlarmAcceptInfo", "El valor de diasSemanaMap es: $diasSemanaMap")
-            Log.d("AlarmAcceptInfo", "El valor de VibrationState es: $VibrationState")
-            Log.d("AlarmAcceptInfo", "El valor de dayList es: $dayList")
-
-
-
-
-
-
-
-
-
-
-
-
             uriAlarm?.let { it2 -> setAlarm(requireContext(), year, month, day, hour, minute, nombre, volumenLevel = volumeAlarma, toneUri = it2, diasRepetirMap = diasSemanaMap, dayList = dayList, vibrate = VibrationState, aplazarTime = timeAplazamiento) }
 
         }
@@ -506,7 +482,7 @@ data class AlarmCache(
 
 
 
-        fun fromJson(json: String, clazz: Class<AlarmCache>): AlarmCache {
+        fun fromJson(json: String, clazz: Class<SettingDataList>): AlarmCache {
             val alarmCache = Gson().fromJson(json, clazz)
             return alarmCache
         }

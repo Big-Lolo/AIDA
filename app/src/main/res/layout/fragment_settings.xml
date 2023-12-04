@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,12 +8,131 @@
     android:background="@color/white">
 
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Settings Fragment"
-        android:textSize="26dp"
-        android:layout_gravity="center"/>
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="85dp"
+        android:layout_height="79dp"
+        android:layout_marginTop="108dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.174"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/circular" />
 
-</FrameLayout>
+    <EditText
+        android:id="@+id/EditorUsername"
+        android:layout_width="176dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="36dp"
+        android:inputType="none"
+        android:text="Nombre Usuario"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.509" />
+
+    <Button
+        android:id="@+id/editButton"
+        android:layout_width="86dp"
+        android:layout_height="35dp"
+        android:text="Editar"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.77"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.665" />
+
+    <Button
+        android:id="@+id/button6"
+        android:layout_width="86dp"
+        android:layout_height="35dp"
+        android:text="Cancelar"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+        app:layout_constraintEnd_toStartOf="@+id/editButton"
+        app:layout_constraintHorizontal_bias="0.654"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.665"
+        android:visibility="invisible"
+        android:clickable="false"/>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="409dp"
+        android:layout_height="455dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.401"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.872">
+
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Configuracion General"
+            android:layout_marginLeft="20dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="17sp"/>
+
+        <Switch
+            android:id="@+id/switch8"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="Uso de perfiles"
+            android:layout_marginLeft="20dp"/>
+
+        <Switch
+            android:id="@+id/switch9"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="Perfiles"
+            android:layout_marginLeft="20dp"/>
+
+        <Switch
+            android:id="@+id/switch10"
+            android:layout_width="match_parent"
+            android:layout_height="66dp"
+            android:text="Asistente window"
+            android:layout_marginLeft="20dp"/>
+
+        <TextView
+            android:id="@+id/textView12"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Administración"
+            android:layout_marginLeft="20dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="17sp"/>
+
+        <Switch
+            android:id="@+id/switch6"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="Control de ubicación"
+            android:layout_marginLeft="20dp"/>
+
+        <Switch
+            android:id="@+id/switch7"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="Control de Llamadas"
+            android:layout_marginLeft="20dp"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="233dp"
+        android:layout_height="35dp"
+        android:text="Buenos dias Usuario"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.208" />
+</androidx.constraintlayout.widget.ConstraintLayout>
