@@ -12,12 +12,12 @@
         android:id="@+id/imageView"
         android:layout_width="85dp"
         android:layout_height="79dp"
-        android:layout_marginTop="108dp"
+        android:layout_marginTop="92dp"
+        android:background="@drawable/circular"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.174"
+        app:layout_constraintHorizontal_bias="0.138"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/circular" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/EditorUsername"
@@ -25,12 +25,16 @@
         android:layout_height="50dp"
         android:layout_marginStart="36dp"
         android:inputType="none"
+        android:clickable="false"
+        android:focusable="false"
         android:text="Nombre Usuario"
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.509" />
+        app:layout_constraintVertical_bias="0.509"
+        android:textSize="18sp"
+        android:visibility="invisible"/>
 
     <Button
         android:id="@+id/editButton"
@@ -39,100 +43,189 @@
         android:text="Editar"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.77"
+        app:layout_constraintHorizontal_bias="0.764"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.665" />
+        app:layout_constraintVertical_bias="0.718" />
 
     <Button
         android:id="@+id/button6"
         android:layout_width="86dp"
         android:layout_height="35dp"
+        android:clickable="false"
         android:text="Cancelar"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
         app:layout_constraintEnd_toStartOf="@+id/editButton"
-        app:layout_constraintHorizontal_bias="0.654"
+        app:layout_constraintHorizontal_bias="0.529"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.665"
-        android:visibility="invisible"
-        android:clickable="false"/>
+        app:layout_constraintVertical_bias="0.718" />
 
-    <LinearLayout
+    <ScrollView
         android:id="@+id/linearLayout3"
-        android:layout_width="409dp"
-        android:layout_height="455dp"
-        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="525dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.401"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.872">
+        app:layout_constraintVertical_bias="0.995"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView11"
+        <LinearLayout
+            android:id="@+id/linearLayout34"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="Configuracion General"
-            android:layout_marginLeft="20dp"
-            android:layout_marginBottom="10dp"
-            android:textSize="17sp"/>
+            android:layout_height="525dp"
+            android:orientation="vertical">
 
-        <Switch
-            android:id="@+id/switch8"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:text="Uso de perfiles"
-            android:layout_marginLeft="20dp"/>
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="10dp"
+                android:text="Configuracion General"
+                android:textSize="17sp"
+                android:layout_marginTop="20dp"/>
 
-        <Switch
-            android:id="@+id/switch9"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:text="Perfiles"
-            android:layout_marginLeft="20dp"/>
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp">
+                <TextView
+                    android:id="@+id/textViewPerfiles"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="Perfiles:"
+                    android:layout_marginLeft="20dp"/>
+                <!-- Spinner -->
+                <Spinner
+                    android:id="@+id/spinnerOpciones"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.2"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="20dp"/>
 
-        <Switch
-            android:id="@+id/switch10"
-            android:layout_width="match_parent"
-            android:layout_height="66dp"
-            android:text="Asistente window"
-            android:layout_marginLeft="20dp"/>
+            </LinearLayout>
 
-        <TextView
-            android:id="@+id/textView12"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:text="Administración"
-            android:layout_marginLeft="20dp"
-            android:layout_marginBottom="10dp"
-            android:textSize="17sp"/>
 
-        <Switch
-            android:id="@+id/switch6"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:text="Control de ubicación"
-            android:layout_marginLeft="20dp"/>
+            <Switch
+                android:id="@+id/switch10"
+                android:layout_width="match_parent"
+                android:layout_height="66dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="20dp"
+                android:text="Asistente window" />
 
-        <Switch
-            android:id="@+id/switch7"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:text="Control de Llamadas"
-            android:layout_marginLeft="20dp"/>
-    </LinearLayout>
+            <TextView
+                android:id="@+id/textView12"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="0dp"
+                android:text="Administración"
+                android:textSize="17sp" />
+
+            <Switch
+                android:id="@+id/switch6"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginLeft="20dp"
+                android:text="Control de ubicación" />
+
+            <Switch
+                android:id="@+id/switch7"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginLeft="20dp"
+                android:text="Identificador de Llamadas" />
+
+            <Switch
+                android:id="@+id/switch2"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginLeft="20dp"
+                android:text="Grabar llamadas" />
+
+
+
+            <Switch
+                android:id="@+id/switch3"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginLeft="20dp"
+                android:text="Asistente de Llamadas"
+                android:layout_marginBottom="10dp"/>
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="0dp"
+                android:text="Servicios"
+                android:textSize="17sp" />
+
+            <Switch
+                android:id="@+id/switch4"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginLeft="20dp"
+                android:text="Lector de Notificaciones" />
+
+            <Switch
+                android:id="@+id/switch5"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginLeft="20dp"
+                android:text="Whatsapp Comms" />
+
+            <Switch
+                android:id="@+id/switch11"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginLeft="20dp"
+                android:text="Llamar a contactos / números"/>
+
+            <Switch
+                android:id="@+id/switch12"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginLeft="20dp"
+                android:text="Gestor de eventos calendario"/>
+
+
+        </LinearLayout>
+    </ScrollView>
 
     <TextView
         android:id="@+id/textView10"
         android:layout_width="233dp"
         android:layout_height="35dp"
         android:text="Buenos dias Usuario"
+        android:textSize="20sp"
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.208" />
+
+    <TextView
+        android:id="@+id/viewNombrefield"
+        android:layout_width="183dp"
+        android:layout_height="51dp"
+        android:layout_marginStart="36dp"
+        android:text="Nombre Usuario"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.515"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:visibility="visible"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

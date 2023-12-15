@@ -479,12 +479,9 @@ data class AlarmCache(
 
     companion object {
 
-
-
-
-        fun fromJson(json: String, clazz: Class<SettingDataList>): AlarmCache {
-            val alarmCache = Gson().fromJson(json, clazz)
-            return alarmCache
+        fun fromJson(json: String, clazz: Class<AlarmCache>): AlarmCache {
+            val alarmCaches = Gson().fromJson(json, clazz)
+            return alarmCaches
         }
     }
 }
