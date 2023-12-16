@@ -2,6 +2,7 @@ package com.example.aida
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.icu.util.Calendar
 import android.os.Bundle
 import android.text.Editable
 import android.text.SpannableStringBuilder
@@ -72,12 +73,16 @@ class settings : Fragment() {
             val userConfig = gson.fromJson(userConfigString, SettingDataList::class.java)
             cacheInfogeneral = userConfig
         }
-        if (!sharedPreferences.contains("UserProfiles")) {
+        if (!sharedPreferences.contains("UserProfiles_DefaultUser")) {
             // Si está vacío, guarda valores por defecto
             val defaultConfig = ProfilesDataList(
                 "DefaultUser",
                 true,
+                true,
                 false,
+                true,
+                true,
+                true,
                 true,
                 true,
                 true,
@@ -94,7 +99,7 @@ class settings : Fragment() {
 
         }else{
             //Cargar el sharedpreferences en el cacheProfiles
-            val userConfigString = sharedPreferences.getString("UserProfiles", "")
+            val userConfigString = sharedPreferences.getString("UserProfiles_DefaultUser", "")
             val gson = Gson()
             val userConfig = gson.fromJson(userConfigString, ProfilesDataList::class.java)
             cacheProfiles = userConfig
@@ -117,16 +122,27 @@ class settings : Fragment() {
         opcionesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = opcionesAdapter
 
+        val elementoSeleccionado = cacheInfogeneral.actualProfile
+        val posicionElemento = cacheInfogeneral.profileList.indexOf(elementoSeleccionado)
+        spinner.setSelection(posicionElemento)
+
+
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val opcionSeleccionada = parent.getItemAtPosition(position).toString()
                 //Obtener la configuracion del perfil Seleccionado
+                if (sharedPreferences.contains("UserProfiles_$opcionSeleccionada")) {
+                    val userConfigString = sharedPreferences.getString("UserProfiles_$opcionSeleccionada", "")
+                    val gson = Gson()
+                    val userConfig = gson.fromJson(userConfigString, ProfilesDataList::class.java)
+                    cacheProfiles = userConfig
+                    //Con esto, cargas en el cache el nuevo perfil.
+                }
 
-                // Actualizar el infocacheGeneral con los ajustes activos y inactivos
-
-                // Cambiar los valores de los switch y otros
-
-
+                //función para actualizar los switch y toddo de la pantalla de config siguiendo cacheProfiles
+                changeStatusSwitches()
+                //Función para habilitar elementos que requieran cambio como el wifi, bluethooth...
+                changeSystemConfigurations()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
@@ -139,37 +155,69 @@ class settings : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //setear los datos actuales
-        val configParameters = sharedPreferences.getString("UserConfigurations", null)
-        val configInformation = configParameters?.let {
-            SettingDataList.fromJsons(
-                it,
-                SettingDataList::class.java
-            )
-        }
-
-
-
-
+        cacheInfogeneral
         val buttonEditor = view.findViewById<Button>(R.id.editButton)
         val cancelButton = view.findViewById<Button>(R.id.button6)
-
-        if(buttonEditor.text != "") {
+        if(buttonEditor.text != "Guardar") {
             buttonEditor.setOnClickListener { EditorButtonState(view, true) }
         }else{
             buttonEditor.setOnClickListener { EditorButtonState(view, false) }
         }
-
         cancelButton.setOnClickListener { CancelButtonClicable(view) }
-
         //Lo que hay que hacer aqui seria de cargar el nombre actual
-        //El nombre lo cargamos del SharedConfig.
+        val title = view.findViewById<TextView>(R.id.Introductorio)
+        val texte = generarSaludo() + cacheInfogeneral.username
+        title.text = texte
         //Asignar los clicables del nav vertical de las subcategorias.
-        //Una de las subcategorias sera de perfiles enteras.
-        //Tendrá un selector, que tendrá todas las que existen y un "+Crear".
+        changeStatusSwitches()
+        //Cambiar configuraciones del sistema segun el perfil
+        changeSystemConfigurations()
 
-        val switchGPS = view.findViewById<Switch>(R.id.switch8)
 
+
+    }
+
+    fun generarSaludo(): String {
+        val horaActual = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+
+        return when {
+            horaActual < 12 -> "Buenos días"
+            horaActual < 20 -> "Buenas tardes"
+            else -> "Buenas noches"
+        }
+    }
+
+    private fun changeStatusSwitches(){
+        //Cambiar el estado de los switchess
+        view?.findViewById<Switch>(R.id.windowAssist)!!.isChecked = cacheProfiles.windowAssist
+        view?.findViewById<Switch>(R.id.gpsswitch)!!.isChecked = cacheProfiles.gpsStatus
+        view?.findViewById<Switch>(R.id.callIdentify)!!.isChecked = cacheProfiles.AssistantCalls
+        view?.findViewById<Switch>(R.id.recordCalls)!!.isChecked = cacheProfiles.recordCalls
+        view?.findViewById<Switch>(R.id.callsBotAsist)!!.isChecked = cacheProfiles.AssistantVoice
+        view?.findViewById<Switch>(R.id.notifyReader)!!.isChecked = cacheProfiles.notifyReader
+        view?.findViewById<Switch>(R.id.WhatsappAssist)!!.isChecked = cacheProfiles.whatsappAssist
+        view?.findViewById<Switch>(R.id.callHelper)!!.isChecked = cacheProfiles.callHelper
+        view?.findViewById<Switch>(R.id.calendarAsistant)!!.isChecked = cacheProfiles.calendarAsistant
+        view?.findViewById<Switch>(R.id.wifi)!!.isChecked = cacheProfiles.wifiEnable
+        view?.findViewById<Switch>(R.id.datos)!!.isChecked = cacheProfiles.datosEnable
+        view?.findViewById<Switch>(R.id.bluetooth)!!.isChecked = cacheProfiles.bluetoothEnable
+    }
+    private fun changeSystemConfigurations(){
+        if (cacheProfiles.bluetoothEnable){
+            //Encender bluethooth
+        }else{
+            //Apagar bluethooth
+        }
+        if (cacheProfiles.wifiEnable){
+            //Encender wifi
+        }else{
+            //Apagar wifi
+        }
+        if (cacheProfiles.datosEnable){
+            //Encender datos
+        }else{
+            //Apagar datos
+        }
     }
 
     private fun EditorButtonState(view:View, saveInfo:Boolean){
@@ -284,8 +332,12 @@ data class SettingDataList(
 
 data class ProfilesDataList(
     var profileName:String,
+    var windowAssist: Boolean,
     var AssistantVoice: Boolean,
     var AssistantCalls: Boolean,
+    var whatsappAssist: Boolean,
+    var callHelper: Boolean,
+    var calendarAsistant: Boolean,
     var gpsStatus: Boolean,
     var wifiEnable: Boolean,
     var datosEnable: Boolean,

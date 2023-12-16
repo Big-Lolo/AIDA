@@ -114,7 +114,7 @@
 
 
             <Switch
-                android:id="@+id/switch10"
+                android:id="@+id/windowAssist"
                 android:layout_width="match_parent"
                 android:layout_height="66dp"
                 android:layout_marginLeft="20dp"
@@ -127,25 +127,46 @@
                 android:layout_height="56dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginBottom="0dp"
-                android:text="Administración"
+                android:text="Administración y Sistema"
                 android:textSize="17sp" />
 
             <Switch
-                android:id="@+id/switch6"
+                android:id="@+id/wifi"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginLeft="20dp"
+                android:text="Wifi" />
+
+            <Switch
+                android:id="@+id/bluetooth"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginLeft="20dp"
+                android:text="Bluetooth" />
+
+            <Switch
+                android:id="@+id/datos"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginLeft="20dp"
+                android:text="Datos Móviles" />
+
+            <Switch
+                android:id="@+id/gpsswitch"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:layout_marginLeft="20dp"
                 android:text="Control de ubicación" />
 
             <Switch
-                android:id="@+id/switch7"
+                android:id="@+id/callIdentify"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:layout_marginLeft="20dp"
                 android:text="Identificador de Llamadas" />
 
             <Switch
-                android:id="@+id/switch2"
+                android:id="@+id/recordCalls"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:layout_marginLeft="20dp"
@@ -154,7 +175,7 @@
 
 
             <Switch
-                android:id="@+id/switch3"
+                android:id="@+id/callsBotAsist"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:layout_marginLeft="20dp"
@@ -171,28 +192,28 @@
                 android:textSize="17sp" />
 
             <Switch
-                android:id="@+id/switch4"
+                android:id="@+id/notifyReader"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:layout_marginLeft="20dp"
                 android:text="Lector de Notificaciones" />
 
             <Switch
-                android:id="@+id/switch5"
+                android:id="@+id/WhatsappAssist"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:layout_marginLeft="20dp"
                 android:text="Whatsapp Comms" />
 
             <Switch
-                android:id="@+id/switch11"
+                android:id="@+id/callHelper"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:layout_marginLeft="20dp"
                 android:text="Llamar a contactos / números"/>
 
             <Switch
-                android:id="@+id/switch12"
+                android:id="@+id/calendarAsistant"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:layout_marginLeft="20dp"
@@ -203,7 +224,7 @@
     </ScrollView>
 
     <TextView
-        android:id="@+id/textView10"
+        android:id="@+id/Introductorio"
         android:layout_width="233dp"
         android:layout_height="35dp"
         android:text="Buenos dias Usuario"
@@ -228,4 +249,61 @@
         android:textAlignment="center"
         android:textSize="18sp"
         android:visibility="visible"/>
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#686750A4"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/insideToolbar"
+            android:layout_width="190dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="100dp"
+            android:background="@drawable/chat_rounded_corner"
+            android:backgroundTint="@color/white">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Secciones"
+                android:textAlignment="center"
+                android:textSize="20sp"
+                android:layout_marginTop="50dp"
+                android:fontFamily="@font/bebas_neue"
+                android:layout_marginBottom="60dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Opción 1"
+                android:textAlignment="center"
+                android:layout_marginBottom="10dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Opción 2"
+                android:textAlignment="center"
+                android:layout_marginBottom="10dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Opción 3"
+                android:textAlignment="center"
+                android:layout_marginBottom="10dp"/>
+
+
+        </LinearLayout>
+
+
+    </androidx.appcompat.widget.Toolbar>
 </androidx.constraintlayout.widget.ConstraintLayout>
