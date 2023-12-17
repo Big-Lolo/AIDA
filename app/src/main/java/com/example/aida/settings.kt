@@ -6,9 +6,11 @@ import android.icu.util.Calendar
 import android.os.Bundle
 import android.text.Editable
 import android.text.SpannableStringBuilder
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -48,6 +50,16 @@ class settings : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
+
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_settings, container, false)
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
         // Comprueba si el archivo de configuración está vacío
@@ -105,13 +117,7 @@ class settings : Fragment() {
             cacheProfiles = userConfig
         }
 
-    }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_settings, container, false)
 
         val spinner: Spinner = view.findViewById(R.id.spinnerOpciones)
         val opcionesAdapter = ArrayAdapter(
@@ -119,6 +125,7 @@ class settings : Fragment() {
             android.R.layout.simple_spinner_item,
             cacheInfogeneral.profileList
         )
+        Log.d("PROFILElIST", "eL PROFILELIST ES: ${cacheInfogeneral}")
         opcionesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = opcionesAdapter
 
@@ -158,7 +165,7 @@ class settings : Fragment() {
         cacheInfogeneral
         val buttonEditor = view.findViewById<Button>(R.id.editButton)
         val cancelButton = view.findViewById<Button>(R.id.button6)
-        if(buttonEditor.text != "Guardar") {
+        if(buttonEditor.text == "Guardar") {
             buttonEditor.setOnClickListener { EditorButtonState(view, true) }
         }else{
             buttonEditor.setOnClickListener { EditorButtonState(view, false) }
@@ -181,9 +188,9 @@ class settings : Fragment() {
         val horaActual = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
 
         return when {
-            horaActual < 12 -> "Buenos días"
-            horaActual < 20 -> "Buenas tardes"
-            else -> "Buenas noches"
+            horaActual < 12 -> "Buenos días "
+            horaActual < 20 -> "Buenas tardes "
+            else -> "Buenas noches "
         }
     }
 
@@ -291,13 +298,16 @@ class settings : Fragment() {
             }
     }
 
-    fun saveProfiles() {
+    private fun saveProfiles() {
         val defaultConfigJson = cacheProfiles.toJson()
         sharedPreferences.edit().putString("UserConfig", defaultConfigJson).apply()
+
     }
 
-    fun saveConfigs(){
+    private fun saveConfigs(){
+        Log.d("Guardado de datos", "savingDatas")
         val defaultConfigJson = cacheInfogeneral.toJson()
+        Log.d("configJSON", "El config en JSON es: $defaultConfigJson")
         sharedPreferences.edit().putString("UserConfig", defaultConfigJson).apply()
     }
 }

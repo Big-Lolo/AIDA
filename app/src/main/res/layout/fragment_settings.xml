@@ -14,64 +14,66 @@
         android:layout_height="79dp"
         android:layout_marginTop="92dp"
         android:background="@drawable/circular"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.138"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <EditText
         android:id="@+id/EditorUsername"
         android:layout_width="176dp"
         android:layout_height="50dp"
         android:layout_marginStart="36dp"
-        android:inputType="none"
+        android:layout_marginTop="80dp"
         android:clickable="false"
         android:focusable="false"
-        android:text="Nombre Usuario"
+        android:hint="Nombre de usuario..."
+        android:inputType="none"
+        android:text=""
         android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.509"
         android:textSize="18sp"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.653"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/editButton"
         android:layout_width="86dp"
         android:layout_height="35dp"
+        android:layout_marginTop="120dp"
         android:text="Editar"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.764"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintHorizontal_bias="0.753"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.718" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/button6"
         android:layout_width="86dp"
         android:layout_height="35dp"
+        android:layout_marginTop="120dp"
         android:clickable="false"
         android:text="Cancelar"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
-        app:layout_constraintEnd_toStartOf="@+id/editButton"
-        app:layout_constraintHorizontal_bias="0.529"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.718" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.446"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
         android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="525dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+
+        android:layout_marginTop="204dp"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.995"
-        android:orientation="vertical">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:id="@+id/linearLayout34"
@@ -84,31 +86,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginBottom="10dp"
                 android:text="Configuracion General"
-                android:textSize="17sp"
-                android:layout_marginTop="20dp"/>
+                android:textSize="17sp" />
 
-            <LinearLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="10dp">
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/textViewPerfiles"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
-                    android:text="Perfiles:"
-                    android:layout_marginLeft="20dp"/>
+                    android:layout_marginLeft="20dp"
+                    android:text="Perfiles:" />
                 <!-- Spinner -->
                 <Spinner
                     android:id="@+id/spinnerOpciones"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.2"
                     android:layout_gravity="center"
-                    android:layout_marginRight="20dp"/>
+                    android:layout_marginRight="20dp"
+                    android:layout_weight="0.2" />
 
             </LinearLayout>
 
@@ -173,14 +175,13 @@
                 android:text="Grabar llamadas" />
 
 
-
             <Switch
                 android:id="@+id/callsBotAsist"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:layout_marginLeft="20dp"
-                android:text="Asistente de Llamadas"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginBottom="10dp"
+                android:text="Asistente de Llamadas" />
 
             <TextView
                 android:id="@+id/textView8"
@@ -210,14 +211,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:layout_marginLeft="20dp"
-                android:text="Llamar a contactos / números"/>
+                android:text="Llamar a contactos / números" />
 
             <Switch
                 android:id="@+id/calendarAsistant"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:layout_marginLeft="20dp"
-                android:text="Gestor de eventos calendario"/>
+                android:text="Gestor de eventos calendario" />
 
 
         </LinearLayout>
@@ -225,38 +226,51 @@
 
     <TextView
         android:id="@+id/Introductorio"
-        android:layout_width="233dp"
-        android:layout_height="35dp"
+        android:layout_width="297dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="16dp"
         android:text="Buenos dias Usuario"
-        android:textSize="20sp"
         android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.867"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.208" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="50dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/icon_send"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.044"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/viewNombrefield"
         android:layout_width="183dp"
         android:layout_height="51dp"
         android:layout_marginStart="36dp"
+        android:layout_marginTop="80dp"
         android:text="Nombre Usuario"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.515"
         android:textAlignment="center"
         android:textSize="18sp"
-        android:visibility="visible"/>
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.677"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="400dp"
+        android:layout_height="350dp"
         android:background="#686750A4"
+        android:clickable="false"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -266,40 +280,44 @@
             android:id="@+id/insideToolbar"
             android:layout_width="190dp"
             android:layout_height="match_parent"
-            android:orientation="vertical"
             android:layout_marginTop="50dp"
             android:layout_marginBottom="100dp"
             android:background="@drawable/chat_rounded_corner"
-            android:backgroundTint="@color/white">
+            android:backgroundTint="@color/white"
+            android:clickable="false"
+            android:orientation="vertical"
+            android:visibility="invisible">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:layout_marginBottom="60dp"
+                android:fontFamily="@font/bebas_neue"
                 android:text="Secciones"
                 android:textAlignment="center"
-                android:textSize="20sp"
-                android:layout_marginTop="50dp"
-                android:fontFamily="@font/bebas_neue"
-                android:layout_marginBottom="60dp" />
+                android:textSize="20sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
                 android:text="Opción 1"
-                android:textAlignment="center"
-                android:layout_marginBottom="10dp"/>
+                android:textAlignment="center" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
                 android:text="Opción 2"
-                android:textAlignment="center"
-                android:layout_marginBottom="10dp"/>
+                android:textAlignment="center" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
                 android:text="Opción 3"
-                android:textAlignment="center"
-                android:layout_marginBottom="10dp"/>
+                android:textAlignment="center" />
 
 
         </LinearLayout>
