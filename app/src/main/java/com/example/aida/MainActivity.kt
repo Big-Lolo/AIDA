@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity(), Home.OnHomeInteractionListener {
         //Para llamar al servicio background que tiene la activity de la desactivacion de alarma.
 
         val intenter = Intent(this, VoiceRecognitionService::class.java)
-        startService(intenter)
+        startForegroundService(intenter)
 
 
         Thread.sleep(2000)

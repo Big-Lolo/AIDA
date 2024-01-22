@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.PixelFormat
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.audiofx.Visualizer
 import android.os.Binder
@@ -64,6 +65,24 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
     private lateinit var contextoService:Context
     private var isRecognitionPaused:Boolean = true
     private val serviceScope = CoroutineScope(Dispatchers.IO)
+
+    private lateinit var audioManager: AudioManager
+    private val audioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
+        when (focusChange) {
+            AudioManager.AUDIOFOCUS_GAIN -> {
+                Log.d("MICROPHONE_ON", "El microfono esta disponible nuevamente")
+                resumeRecognition()
+            }
+            AudioManager.AUDIOFOCUS_LOSS -> {
+                Log.d("MICROPHONE_OFF", "El microfono no esta disponible actualmente")
+
+                // Perdiste el foco del audio, debes pausar o detener tu servicio aquí
+            }
+            // Otros casos de cambios en el foco del audio que puedas manejar
+        }
+    }
+
+
 
     interface SpeechRecognitionCallback {
         fun onTextRecognized(text: String)
@@ -126,17 +145,23 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
         contextoService = this
 
         Log.d("VoiceRecognitionService", "Iniciado el servicio.")
-        handler.postDelayed({
-            this.openGoogleAssistantFragment()
+        //handler.postDelayed({
+        //    this.openGoogleAssistantFragment()
+       // }, 10000)
 
+        audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val result = audioManager.requestAudioFocus(
+            audioFocusChangeListener,
+            AudioManager.STREAM_MUSIC,
+            AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
+        )
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            Log.d("abracadable", "Innto the rithm")
+        } else {
+            Log.d("abracadable", "OUTTERRR the rithm")
 
-
-
-
-
-
-
-        }, 10000)
+            // No se pudo obtener el foco de audio, el micrófono no está disponible
+        }
 
     }
 
@@ -275,6 +300,9 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
                 speechRecognizerManager.initialize()
                 speechRecognizerManager.startListening()
             }
+
+
+
         })
     }
 
@@ -315,6 +343,12 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
                     callback.onTextRecognized(voiceText)
                 }
             }
+
+            override fun onEndOfSegmentedSession() {
+                Log.d("NODETECTION", "No se reconocio nada")
+            }
+
+
 
             override fun onPartialResults(partialResults: Bundle?) {
                 val voiceText = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.get(0)

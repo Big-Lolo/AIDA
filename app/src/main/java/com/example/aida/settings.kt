@@ -1,5 +1,6 @@
 package com.example.aida
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.icu.util.Calendar
@@ -81,8 +82,11 @@ class settings : Fragment() {
         }else{
             //Cargar el sharedpreferences en el cacheInfogeneral
             val userConfigString = sharedPreferences.getString("UserConfig", "")
+            Log.d("UserconfigJSON", "$userConfigString")
             val gson = Gson()
             val userConfig = gson.fromJson(userConfigString, SettingDataList::class.java)
+            Log.d("UserconfigJSON2", "$userConfig")
+
             cacheInfogeneral = userConfig
         }
         if (!sharedPreferences.contains("UserProfiles_DefaultUser")) {
@@ -165,12 +169,10 @@ class settings : Fragment() {
         cacheInfogeneral
         val buttonEditor = view.findViewById<Button>(R.id.editButton)
         val cancelButton = view.findViewById<Button>(R.id.button6)
-        if(buttonEditor.text == "Guardar") {
-            buttonEditor.setOnClickListener { EditorButtonState(view, true) }
-        }else{
-            buttonEditor.setOnClickListener { EditorButtonState(view, false) }
-        }
+        buttonEditor.setOnClickListener { EditorButtonState(view) }
         cancelButton.setOnClickListener { CancelButtonClicable(view) }
+
+
         //Lo que hay que hacer aqui seria de cargar el nombre actual
         val title = view.findViewById<TextView>(R.id.Introductorio)
         val texte = generarSaludo() + cacheInfogeneral.username
@@ -193,6 +195,8 @@ class settings : Fragment() {
             else -> "Buenas noches "
         }
     }
+
+
 
     private fun changeStatusSwitches(){
         //Cambiar el estado de los switchess
@@ -227,14 +231,15 @@ class settings : Fragment() {
         }
     }
 
-    private fun EditorButtonState(view:View, saveInfo:Boolean){
+    @SuppressLint("SetTextI18n")
+    private fun EditorButtonState(view:View){
         val buttonEditor = view.findViewById<Button>(R.id.editButton)
         val cancelButton = view.findViewById<Button>(R.id.button6)
         val editor = view.findViewById<EditText>(R.id.EditorUsername)
         val viewname = view.findViewById<TextView>(R.id.viewNombrefield)
+        val introduct = view.findViewById<TextView>(R.id.Introductorio)
 
-
-        if (!saveInfo) {
+        if (buttonEditor.text != "Guardar") {
             buttonEditor.text = "Guardar"
             cancelButton.visibility = View.VISIBLE
             cancelButton.isClickable = true
@@ -246,15 +251,18 @@ class settings : Fragment() {
             editor.text = editable
         }else{
             val name2save = editor.text
+            Log.d("NAME-EDITED", "El nombre nuevo es ${name2save.toString()}")
             cacheInfogeneral.username = name2save.toString()
             saveConfigs()
             viewname.visibility = View.VISIBLE
+            viewname.text = name2save.toString()
             editor.visibility = View.INVISIBLE
             cancelButton.visibility = View.INVISIBLE
             cancelButton.isClickable = false
             buttonEditor.text = "Editar"
             editor.isClickable = false
             editor.focusable = View.NOT_FOCUSABLE
+            introduct.text = generarSaludo() + name2save.toString()
         }
     }
 
@@ -300,7 +308,7 @@ class settings : Fragment() {
 
     private fun saveProfiles() {
         val defaultConfigJson = cacheProfiles.toJson()
-        sharedPreferences.edit().putString("UserConfig", defaultConfigJson).apply()
+        sharedPreferences.edit().putString("UserProfiles_${cacheProfiles.profileName}", defaultConfigJson).apply()
 
     }
 
