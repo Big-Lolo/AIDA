@@ -65,7 +65,7 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
     private lateinit var contextoService:Context
     private var isRecognitionPaused:Boolean = true
     private val serviceScope = CoroutineScope(Dispatchers.IO)
-
+    private var opened = false
     private lateinit var audioManager: AudioManager
     private val audioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
         when (focusChange) {
@@ -189,11 +189,16 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
     }
 
     override fun onSpeechDetected() {
-        openGoogleAssistantFragment()
+        if(!opened) {
+            openGoogleAssistantFragment()
+        }else{
+            //Activa el microfono del text-to-speech
+            VoiceListener()
+        }
     }
 
-
     private fun openGoogleAssistantFragment() {
+        opened = true
         Log.d("AIDAASSISTANT", "Mostrando WindowManager del Asistente")
         speechRecognizerManager.stopListening()
         val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -232,6 +237,7 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
                 windowManager.removeView(view)
                 speechRecognizerManager.setSpeechObserver(this)
                 speechRecognizerManager.startListening()
+                opened = false
                 true
             } else {
                 false
@@ -289,6 +295,7 @@ class VoiceRecognitionService : Service(), SpeechObserver, TextToSpeech.OnInitLi
                 textView.text = voiceText
                 // Pasar texto a procesamiento
                 val result = predicer.responseClass(voiceText.toString())
+                Log.d("results", "${result}")
                 val textoDeRespuesta = result.first
                 val functions = result.second
                 //Obtener respuesta del procesamiento y dictarla

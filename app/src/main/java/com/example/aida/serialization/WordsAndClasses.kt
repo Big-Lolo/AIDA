@@ -141,6 +141,7 @@ class WordsAndClasses(private val modelInterpreter: Interpreter, private val con
     fun responseClass(sentence: String): Triple<String, String?, String?> {
 
         var a = predictClass(sentence)
+
         return getResponse(a, intentsDoc)
     }
 

@@ -33,6 +33,8 @@ class MainActivity : AppCompatActivity(), Home.OnHomeInteractionListener {
         startForegroundService(intenter)
 
 
+
+
         Thread.sleep(2000)
         installSplashScreen()
         binding = ActivityMainBinding.inflate(layoutInflater)
